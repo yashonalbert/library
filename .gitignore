@@ -1,0 +1,4 @@
+node_modules
+.tags*
+.vscode
+config.json
