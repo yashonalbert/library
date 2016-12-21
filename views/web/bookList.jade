@@ -1,0 +1,99 @@
+extends ../layout/web
+
+prepend content
+  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    h3.page-header 图书清单
+    .panel.panel-default
+      a.btn.btn-primary(data-toggle='modal', data-target='#bookListSettings')
+        span.glyphicon.glyphicon-plus(aria-hidden='true') 手动添加
+      a.btn.btn-success(data-toggle='modal', data-target='#scancodeAdd')
+        span.glyphicon.glyphicon-barcode(aria-hidden='true') 扫码添加
+      a.btn.btn-info(data-toggle='modal', data-target='#searchAdd')
+        span.glyphicon.glyphicon-search(aria-hidden='true') 搜索添加
+    .panel.panel-default
+      table.table.table-hover.table-condensed
+        thead
+          tr
+            th 标题
+            th 作者
+            th 翻译
+            th 出版社
+            th 总数
+            th 剩余
+            th 入库日期
+            th 操作
+        tbody
+          tr
+            td yashon
+            td 作者
+            td 翻译
+            td 出版社
+            td 3
+            td 2
+            td 2015-12-12 14:14:14
+            td
+              a.btn.btn-primary.btn-xs
+                span.glyphicon.glyphicon-share(aria-hidden='true') 详情
+              a.btn.btn-danger.btn-xs
+                span.glyphicon.glyphicon-trash(aria-hidden='true') 删除
+                
+      .panel-footer
+        form.form-inline
+          | 每页 
+          select.form-control
+            option 10
+            option 20
+            option 30
+          |  条，共 0 条记录
+          .pull-right
+            a.btn.btn-default(href='#') 上一页
+            |  第 
+            select.form-control
+              option 1
+              option 2
+              option 3
+            |  页 
+            a.btn.btn-default(href='#') 下一页
+      
+      #bookListSettings.modal.fade
+        .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-label='Close')
+                span(aria-hidden='true') ×
+              h4.modal-title 添加管理员(可修改)
+            .modal-body
+              form
+                label(for='title') 标题
+                input#title.form-control(type='text')
+                label(for='isbn10') ISBN10
+                input#isbn10.form-control(type='text')
+                label(for='isbn13') ISBN13
+                input#isbn13.form-control(type='text')
+                label(for='author') 作者
+                input#author.form-control(type='password')
+                label(for='translater') 翻译
+                input#translater.form-control(type='text')
+                label(for='publisher') 出版社
+                input#publisher.form-control(type='email')
+                label(for='total') 总数
+                input#total.form-control(type='password')
+            .modal-footer
+              button.btn.btn-default(type='button', data-dismiss='modal') 取消
+              button.btn.btn-primary(type='button') 确定
+              
+      #scancodeAdd.modal.fade
+        .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-label='Close')
+                span(aria-hidden='true') ×
+              h4.modal-title 扫码添加
+            .modal-body
+              img(src="images/")
+            .modal-footer
+              button.btn.btn-default(type='button', data-dismiss='modal') 取消
+              button.btn.btn-primary(type='button') 确定
+
+append footer
+  script(src='/web/js/navActive.js')
