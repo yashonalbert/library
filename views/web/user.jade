@@ -1,0 +1,48 @@
+extends ../layout/web
+
+prepend content
+  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    h3.page-header 用户管理
+    .panel.panel-default
+      table.table.table-hover.table-condensed
+        thead
+          tr
+            th 姓名
+            th 账号
+            th 微信号
+            th 电话
+            th 邮箱
+            th 已借书籍 
+              
+        tbody
+          tr
+            td 
+            td 
+            td 
+            td 
+            td 
+            td
+            td
+              a.btn.btn-success.btn-xs
+                span.glyphicon.glyphicon-comment(aria-hidden='true') 发送消息 
+            
+      .panel-footer
+        form.form-inline
+          | 每页 
+          select.form-control
+            option 10
+            option 20
+            option 30
+          |  条，共 0 条记录
+          .pull-right
+            a.btn.btn-default(href='#') 上一页
+            |  第 
+            select.form-control
+              option 1
+              option 2
+              option 3
+            |  页 
+            a.btn.btn-default(href='#') 下一页
+
+append footer
+  script(src='/web/js/navActive.js')

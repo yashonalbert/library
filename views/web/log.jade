@@ -1,0 +1,39 @@
+extends ../layout/web
+
+prepend content
+  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    h3.page-header 系统日志
+    .panel.panel-default
+      table.table.table-hover.table-condensed
+        thead
+          tr
+            th 行为
+            th 类别
+            th 发生时间
+        tbody
+          each log in logList
+            tr
+              td #{log.action}
+              td #{log.type}
+              td #{log.date}
+              
+      .panel-footer
+        form.form-inline
+          | 每页 
+          select.form-control
+            option 10
+            option 20
+            option 30
+          |  条，共 0 条记录
+          .pull-right
+            a.btn.btn-default(href='#') 上一页
+            |  第 
+            select.form-control
+              option 1
+              option 2
+              option 3
+            |  页 
+            a.btn.btn-default(href='#') 下一页
+
+append footer
+  script(src='/web/js/navActive.js')
