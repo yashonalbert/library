@@ -1,0 +1,91 @@
+extends ../layout/web
+
+prepend content
+  .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    h3.page-header 管理员
+    .panel.panel-default
+      a.btn.btn-primary(data-toggle='modal', data-target='#adminUserSettings')
+        span.glyphicon.glyphicon-plus(aria-hidden='true') 添加管理员
+    .panel.panel-default
+      table.table.table-hover.table-condensed
+        thead
+          tr
+            th 用户名
+            th 用户组
+            th 昵称
+            th 邮箱
+            th 创建日期
+            th 操作
+        tbody
+          each adminUser in adminUserList
+            tr
+              td #{adminUser.username}
+              td #{adminUser.group.groupname}
+              td #{adminUser.nickname}
+              td #{adminUser.email}
+              td #{adminUser.date}
+              td
+                a.btn.btn-primary.btn-xs(adminuser='#{[adminUser.username,adminUser.group.groupname,adminUser.nickname,adminUser.email]}')
+                  span.glyphicon.glyphicon-edit(aria-hidden='true', data-toggle='modal', data-target='#adminUserSettings') 编辑
+                a.btn.btn-danger.btn-xs(href='/admin/#{adminUser._id}/removeAdminUser')
+                  span.glyphicon.glyphicon-trash(aria-hidden='true') 删除
+      .panel-footer
+        form.form-inline
+          | 每页 
+          select.form-control
+            option 10
+            option 20
+            option 30
+          |  条，共 0 条记录
+          .pull-right
+            a.btn.btn-default(href='#') 上一页
+            |  第 
+            select.form-control
+              option 1
+              option 2
+              option 3
+            |  页 
+            a.btn.btn-default(href='#') 下一页
+      
+      #adminUserSettings.modal.fade
+        .modal-dialog
+          .modal-content
+            form(role='form' method="post" action="/admin/changeAdminUser")
+              .modal-header
+                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                  span(aria-hidden='true') ×
+                h4.modal-title 添加管理员(可修改)
+              .modal-body
+                  label(for='username') 用户名
+                  input#username.form-control(type='text' name='username')
+                  label(for='password') 密码
+                  input#password.form-control(type='password' name='password')
+                  label(for='nickname') 昵称
+                  input#nickname.form-control(type='text' name='nickname')
+                  label(for='email') 邮箱
+                  input#email.form-control(type='email' name='email')
+                  label(for='group') 用户组  
+                  select#group.form-control(name='group')
+                    each adminGroup in adminGroupList
+                      option #{adminGroup.groupname}
+              .modal-footer
+                button.btn.btn-default(type='button', data-dismiss='modal') 取消
+                button.btn.btn-primary(type='submit') 确定
+
+append footer
+  script(src='/web/js/navActive.js')
+  script.
+    $('#adminUserSettings').modal({backdrop: 'static', keyboard: false});
+    $('#adminUserSettings').modal('hide');
+    $('tr a.btn.btn-primary').click(function(){
+      $('#username').val($(this).attr('adminuser').split(",")[0]);
+      $('#group').val($(this).attr('adminuser').split(",")[1]);
+      $('#nickname').val($(this).attr('adminuser').split(",")[2]);
+      $('#email').val($(this).attr('adminuser').split(",")[3]);
+    });
+    $('.modal-header button.close,.modal-footer button.btn.btn-default').click(function(){
+      $('#groupname').val('');
+      $('#group').val('');
+      $('#nickname').val('');
+      $('#email').val('');
+    });
