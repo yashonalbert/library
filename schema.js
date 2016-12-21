@@ -1,9 +1,15 @@
 const mongoose = require('mongoose');
+const config = require('./config.json');
 mongoose.connect(config.mongodb);
 mongoose.Promise = require('bluebird');
 
 AdminGroupSchema = new mongoose.Schema({
-  name: String,
+  groupname: {
+    type: String,
+    index: {
+      unique :true
+    }
+  },
   permissions: Array,
   date: {
     type: Date,
@@ -20,11 +26,12 @@ AdminUserSchema = new mongoose.Schema({
   },
   nickname: String,
   password: String,
+  open_id: String,
   salt: String,
   email: String,
   group: {
-    type: String,
-    ref: 'AdminGroup'
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'admingroup'
   },
   date: {
     type: Date,
@@ -32,7 +39,7 @@ AdminUserSchema = new mongoose.Schema({
   }
 });
 
-BookSchema = new mongoose.Schema({
+BookListSchema = new mongoose.Schema({
   id: Number,
   isbn10: Number,
   isbn13: Number,
@@ -67,9 +74,14 @@ BookSchema = new mongoose.Schema({
 
 LendListSchema = new mongoose.Schema({
   title: String,
-  isbn10: Number,
-  isbn13: Number,
-  lenduser: String,
+  id:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'booklist'
+  },
+  user_id: {
+    type: String,
+    ref: 'user'
+  },
   lenddate: {
     type: Date,
     default: Date.now
@@ -80,8 +92,22 @@ LendListSchema = new mongoose.Schema({
   }
 });
 
+LogSchema = new mongoose.Schema({
+  action : String,
+  type : String,
+  date: {
+    type: Date,
+    default: Date.now
+  }
+});
+
 UserSchema = new mongoose.Schema({
-  userid: String,
+  user_id: {
+    type:String,
+    index: {
+      unique :true
+    }
+  },
   name: String,
   account: String,
   wx: String,
@@ -90,20 +116,11 @@ UserSchema = new mongoose.Schema({
   lendbook: Array
 });
 
-LogSchema = new mongoose.Schema({
-  type : String,
-  date: {
-    type: Date,
-    default: Date.now
-  },
-  content : String
-});
-
 module.exports = {
   AdminGroup: mongoose.model('admingroup', AdminGroupSchema),
   AdminUser: mongoose.model('adminuser', AdminUserSchema),
-  Book: mongoose.model('book', BookSchema),
+  BookList: mongoose.model('book', BookListSchema),
   LendList: mongoose.model('lendlist', LendListSchema),
-  User: mongoose.model('user', UserSchema),
-  Log: mongoose.model('log', LogSchema)
+  Log: mongoose.model('log', LogSchema),
+  User: mongoose.model('user', UserSchema)
 };
