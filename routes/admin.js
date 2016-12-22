@@ -16,8 +16,8 @@ router.get('/login', function(req, res) {
 router.post('/login', function(req, res) {
   AdminUser.findOne({username: req.body.username}, function(error, adminUserObj){
     if (adminUserObj) {
-      if (utils.hashPassword(result.salt, req.body.password) === adminUserObj.password) {
-        res.render('web/adminGroup');
+      if (utils.hashPassword(adminUserObj.salt, req.body.password) === adminUserObj.password) {
+        res.redirect('adminGroup');
       } else {
         res.send('密码错误');
       }
