@@ -6,7 +6,7 @@ prepend content
     .panel.panel-default
       a.btn.btn-primary(data-toggle='modal', data-target='#bookListSettings')
         span.glyphicon.glyphicon-plus(aria-hidden='true') 手动添加
-      a.btn.btn-success(data-toggle='modal', data-target='#scancodeAdd')
+      a.btn.btn-success(data-toggle='modal', data-target='#qrcodeAdd')
         span.glyphicon.glyphicon-barcode(aria-hidden='true') 扫码添加
       a.btn.btn-info(data-toggle='modal', data-target='#searchAdd')
         span.glyphicon.glyphicon-search(aria-hidden='true') 搜索添加
@@ -82,18 +82,22 @@ prepend content
               button.btn.btn-default(type='button', data-dismiss='modal') 取消
               button.btn.btn-primary(type='button') 确定
               
-      #scancodeAdd.modal.fade
+      #qrcodeAdd.modal.fade
         .modal-dialog
           .modal-content
             .modal-header
               button.close(type='button', data-dismiss='modal', aria-label='Close')
                 span(aria-hidden='true') ×
               h4.modal-title 扫码添加
-            .modal-body
-              img(src="images/")
+            .modal-body.text-center
+              #qrcode_book
+              h5 请扫描上方的二维码进入扫码借书页面
             .modal-footer
               button.btn.btn-default(type='button', data-dismiss='modal') 取消
-              button.btn.btn-primary(type='button') 确定
 
 append footer
   script(src='/web/js/navActive.js')
+  script(src='/web/js/jquery.qrcode.min.js')
+  script.
+    $('#qrcode_book').qrcode({text: "http://www.baidu.com"});
+    
