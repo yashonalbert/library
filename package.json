@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "babel src --out-dir app --ignore public/*",
+    "test": "mocha --compilers js:babel-core/register test/*.test.js",
+    "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha -- test/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -14,14 +16,29 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/YashonAlbert/szlibrary#readme",
   "dependencies": {
+    "bluebird": "^3.4.7",
     "body-parser": "^1.15.2",
+    "cado": "faceair/cado",
     "express": "^4.14.0",
     "jade": "^1.11.0",
+    "lodash": "^4.17.4",
     "mongoose": "^4.7.1",
     "request": "^2.79.0",
     "wechat-enterprise": "^0.1.1"
   },
   "jshintConfig": {
     "esversion": 6
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-env": "^1.1.4",
+    "eslint": "^3.9.1",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.1.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.6.0",
+    "isparta": "^4.0.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0"
   }
 }

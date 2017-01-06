@@ -1,28 +1,29 @@
 const mongoose = require('mongoose');
 const config = require('./config.json');
+
 mongoose.connect(config.mongodb);
 mongoose.Promise = require('bluebird');
 
-AdminGroupSchema = new mongoose.Schema({
+const AdminGroupSchema = new mongoose.Schema({
   groupname: {
     type: String,
     index: {
-      unique :true
-    }
+      unique: true,
+    },
   },
   permissions: Array,
   date: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
-AdminUserSchema = new mongoose.Schema({
+const AdminUserSchema = new mongoose.Schema({
   username: {
     type: String,
     index: {
-      unique :true
-    }
+      unique: true,
+    },
   },
   nickname: String,
   password: String,
@@ -31,15 +32,15 @@ AdminUserSchema = new mongoose.Schema({
   email: String,
   group: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'admingroup'
+    ref: 'admingroup',
   },
   date: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
-BookListSchema = new mongoose.Schema({
+const BookListSchema = new mongoose.Schema({
   id: Number,
   isbn10: Number,
   isbn13: Number,
@@ -54,66 +55,66 @@ BookListSchema = new mongoose.Schema({
   translator: Array,
   publisher: String,
   pubdate: Date,
-  tags:[{
+  tags: [{
     count: Number,
-    name: String
+    name: String,
   }],
   binding: String,
   price: Number,
   series: {
-      id: Number,
-      title: String
+    id: Number,
+    title: String,
   },
   pages: Number,
   author_intro: String,
   summary: String,
   catalog: String,
   total: Number,
-  surplus: Number
+  surplus: Number,
 });
 
-LendListSchema = new mongoose.Schema({
+const LendListSchema = new mongoose.Schema({
   title: String,
-  id:{
+  id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'booklist'
+    ref: 'booklist',
   },
   user_id: {
     type: String,
-    ref: 'user'
+    ref: 'user',
   },
   lenddate: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   returndate: {
     type: Date,
-    default: Date.now + 30 * 24 * 60 * 60
-  }
+    default: Date.now + (30 * 24 * 60 * 60),
+  },
 });
 
-LogSchema = new mongoose.Schema({
-  action : String,
-  type : String,
+const LogSchema = new mongoose.Schema({
+  action: String,
+  type: String,
   date: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
-UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   user_id: {
-    type:String,
+    type: String,
     index: {
-      unique :true
-    }
+      unique: true,
+    },
   },
   name: String,
   account: String,
   wx: String,
   tel: Number,
   email: String,
-  lendbook: Array
+  lendbook: Array,
 });
 
 module.exports = {
@@ -122,5 +123,5 @@ module.exports = {
   BookList: mongoose.model('book', BookListSchema),
   LendList: mongoose.model('lendlist', LendListSchema),
   Log: mongoose.model('log', LogSchema),
-  User: mongoose.model('user', UserSchema)
+  User: mongoose.model('user', UserSchema),
 };
