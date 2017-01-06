@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel src --out-dir app --ignore public/*",
+    "build": "babel src -d lib",
     "test": "mocha --compilers js:babel-core/register test/*.test.js",
     "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha -- test/*.test.js"
   },
