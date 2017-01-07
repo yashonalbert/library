@@ -1,5 +1,6 @@
 import Cado from 'cado';
-import config from '../../config.json';
+
+const { config } = global.app;
 
 const cado = new Cado({ filename: config.database });
 

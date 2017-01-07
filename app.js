@@ -1,10 +1,14 @@
-const { app, BrowserWindow } = require('electron');
-const { default: server } = require('./lib/server');
+/* eslint-disable import/newline-after-import */
+
+const electron = require('electron');
 const { getConfig } = require('./config');
 
-const config = getConfig(app.getAppPath());
+// define global app & config
+const app = global.app = electron.app;
+const config = app.config = getConfig(app.getAppPath());
 
 // start web server
+const { default: server } = require('./lib/server');
 server.listen(config.port);
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -13,7 +17,7 @@ let win;
 
 function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 600, title: '图书馆' });
+  win = new electron.BrowserWindow({ width: 800, height: 600, title: '图书馆' });
 
   // and load the index.html of the app.
   win.loadURL(`http://localhost:${config.port}`);
@@ -48,8 +52,3 @@ app.on('activate', () => {
     createWindow();
   }
 });
-
-app.config = config;
-app.server = server;
-
-global.app = app;
