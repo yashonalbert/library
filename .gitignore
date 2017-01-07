@@ -2,5 +2,6 @@ node_modules
 .tags*
 logs
 lib
-config.json
 yarn.lock
+config.json
+database.json

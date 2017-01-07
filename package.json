@@ -6,7 +6,8 @@
   "scripts": {
     "build": "babel src -d lib",
     "test": "mocha --compilers js:babel-core/register test/*.test.js",
-    "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha -- test/*.test.js"
+    "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha -- test/*.test.js",
+    "electron": "babel src -d lib ; electron ."
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,7 @@
   "homepage": "https://bitbucket.org/YashonAlbert/szlibrary#readme",
   "dependencies": {
     "babel-polyfill": "^6.20.0",
+    "bluebird": "^3.4.7",
     "cado": "faceair/cado",
     "electron": "^1.4.13",
     "joi": "^10.1.0",

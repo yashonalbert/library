@@ -1,5 +1,9 @@
 /* eslint-disable import/newline-after-import */
 
+// replace global.Promise to bluebird
+global.Promise = require('bluebird');
+
+// require electron
 const electron = require('electron');
 const { getConfig } = require('./config');
 
