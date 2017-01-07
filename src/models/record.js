@@ -7,7 +7,7 @@ const RecordModel = cado.model('record', {
   bookID: Joi.number().required(),
   lentTime: Joi.date().default(Date.now),
   returnTime: Joi.date(),
-  status: Joi.string().valid('confirming', 'rejected', 'borrowed', 'returned', 'outdated').default('confirming'),
+  status: Joi.string().valid('confirming', 'rejected', 'lent', 'returned', 'outdated').default('confirming'),
 }, {
   indexes: {
     indices: ['userID', 'bookID', 'status'],
@@ -21,7 +21,7 @@ const RecordModel = cado.model('record', {
       return this.find({
         userID,
         status: {
-          $in: ['borrowed', 'returned', 'outdated'],
+          $in: ['lent', 'returned', 'outdated'],
         },
       });
     },
@@ -29,7 +29,7 @@ const RecordModel = cado.model('record', {
       return this.count({
         userID,
         status: {
-          $in: ['borrowed', 'outdated'],
+          $in: ['lent', 'outdated'],
         },
       });
     },
@@ -38,7 +38,7 @@ const RecordModel = cado.model('record', {
         userID,
         bookID,
         status: {
-          $in: ['borrowed', 'outdated'],
+          $in: ['lent', 'outdated'],
         },
       }, 'lentTime'));
     },
@@ -57,7 +57,7 @@ const RecordModel = cado.model('record', {
   methods: {
     returnBook() {
       // TODO 非原子判断
-      if (['borrowed', 'outdated'].indexOf(this.status) !== -1) {
+      if (['lent', 'outdated'].indexOf(this.status) !== -1) {
         this.update({
           status: 'returned',
           returnTime: new Date(),

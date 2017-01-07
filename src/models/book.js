@@ -22,7 +22,7 @@ const BookModel = cado.model('book', {
       return this.totalNum - cado.model('record').count({
         bookID,
         status: {
-          $in: ['borrowed', 'outdated'],
+          $in: ['lent', 'outdated'],
         },
       });
     },
