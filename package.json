@@ -1,8 +1,8 @@
 {
   "name": "szlibrary",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "szlibrary",
+  "main": "lib/app.js",
   "scripts": {
     "build": "babel src -d lib",
     "test": "mocha --compilers js:babel-core/register test/*.test.js",
@@ -16,19 +16,13 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/YashonAlbert/szlibrary#readme",
   "dependencies": {
-    "bluebird": "^3.4.7",
-    "body-parser": "^1.15.2",
+    "babel-polyfill": "^6.20.0",
     "cado": "faceair/cado",
-    "express": "^4.14.0",
-    "jade": "^1.11.0",
     "joi": "^10.1.0",
+    "koa": "next",
     "lodash": "^4.17.4",
-    "mongoose": "^4.7.1",
-    "request": "^2.79.0",
-    "wechat-enterprise": "^0.1.1"
-  },
-  "jshintConfig": {
-    "esversion": 6
+    "log4js": "^1.1.0",
+    "request": "^2.79.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",

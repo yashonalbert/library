@@ -2,3 +2,4 @@ node_modules
 .tags*
 config.json
 lib
+logs/*.log

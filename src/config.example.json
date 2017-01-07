@@ -1,8 +1,0 @@
-{
-  "wechat": {
-    "token": "",
-    "encodingAESKey": "",
-    "corpId": ""
-  },
-  "mongodb": "mongodb://localhost/szlibrary"
-}

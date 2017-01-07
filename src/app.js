@@ -1,28 +1,16 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
-const wechat = require('wechat-enterprise');
-const config = require('./config.json');
+import 'babel-polyfill';
+import Koa from 'koa';
+import config from '../config.json';
+import Logger from './logger';
 
-const app = express();
+const app = new Koa();
+const logger = Logger('koa');
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use('/corp', wechat(config.wechat, (req, res, next) => {
-  res.writeHead(200);
-  res.end('hello node api');
-}));
-
-app.use('/admin', require('./routes/admin'));
-app.use('/list', require('./routes/list'));
-app.use('/system', require('./routes/system'));
-
-app.get('/', (req, res) => {
-  res.redirect('/admin/login');
+app.use(async (ctx, next) => {
+  const start = new Date();
+  await next();
+  const ms = new Date() - start;
+  logger.info(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
 
-app.listen(5000);
+app.listen(config.port);
