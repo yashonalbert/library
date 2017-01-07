@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import cado from '../cado';
+import cado from '../utils/cado';
 
 const BookModel = cado.model('book', {
   doubanID: Joi.number().required(),

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import Joi from 'joi';
-import cado from '../cado';
+import cado from '../utils/cado';
 
 const RecordModel = cado.model('record', {
   userID: Joi.string().required(),

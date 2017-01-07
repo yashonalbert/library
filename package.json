@@ -2,7 +2,7 @@
   "name": "szlibrary",
   "version": "1.0.0",
   "description": "szlibrary",
-  "main": "lib/app.js",
+  "main": "app.js",
   "scripts": {
     "build": "babel src -d lib",
     "test": "mocha --compilers js:babel-core/register test/*.test.js",
@@ -18,12 +18,14 @@
   "dependencies": {
     "babel-polyfill": "^6.20.0",
     "cado": "faceair/cado",
+    "electron": "^1.4.13",
     "joi": "^10.1.0",
     "koa": "next",
     "koa-router": "next",
     "lodash": "^4.17.4",
     "log4js": "^1.1.0",
-    "request": "^2.79.0"
+    "request": "^2.79.0",
+    "wechat-enterprise-api": "^0.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
