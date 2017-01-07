@@ -19,7 +19,7 @@ const BookModel = cado.model('book', {
 }, {
   statics: {
     getStock(bookID) {
-      return this.totalNum - cado.model('history').count({
+      return this.totalNum - cado.model('record').count({
         bookID,
         status: {
           $in: ['borrowed', 'outdated'],

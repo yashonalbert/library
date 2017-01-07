@@ -2,7 +2,7 @@ import _ from 'lodash';
 import Joi from 'joi';
 import cado from '../cado';
 
-const HistoryModel = cado.model('history', {
+const RecordModel = cado.model('record', {
   userID: Joi.string().required(),
   bookID: Joi.number().required(),
   lentTime: Joi.date().default(Date.now),
@@ -17,7 +17,7 @@ const HistoryModel = cado.model('history', {
     bookID: 'book',
   },
   statics: {
-    getBorrowingHistory(userID) {
+    getLentRecord(userID) {
       return this.find({
         userID,
         status: {
@@ -25,7 +25,7 @@ const HistoryModel = cado.model('history', {
         },
       });
     },
-    getBorrowingBooksCount(userID) {
+    getLentBooksCount(userID) {
       return this.count({
         userID,
         status: {
@@ -33,7 +33,7 @@ const HistoryModel = cado.model('history', {
         },
       });
     },
-    findHistory(userID, bookID) {
+    findRecord(userID, bookID) {
       return _.first(this.findBySort({
         userID,
         bookID,
@@ -42,15 +42,15 @@ const HistoryModel = cado.model('history', {
         },
       }, 'lentTime'));
     },
-    borrowBook(userID, bookID) {
+    lentBook(userID, bookID) {
       this.crate({ userID, bookID });
     },
     returnBook(userID, bookID) {
-      const history = this.returnBook(userID, bookID);
-      if (!history) {
+      const record = this.returnBook(userID, bookID);
+      if (!record) {
         throw new Error('没找到借书记录');
       } else {
-        history.returnBook();
+        record.returnBook();
       }
     },
   },
@@ -67,4 +67,4 @@ const HistoryModel = cado.model('history', {
   },
 });
 
-export default HistoryModel;
+export default RecordModel;

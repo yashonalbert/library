@@ -21,19 +21,19 @@ const UserModel = cado.model('user', {
 
   },
   methods: {
-    getBorrowingHistory() {
-      return cado.model('history').getBorrowingHistory(this.id);
+    getLentRecord() {
+      return cado.model('record').getLentRecord(this.id);
     },
-    borrowBook(bookID) {
+    lentBook(bookID) {
       const stock = cado.model('book').getStock(bookID);
       if (stock > 0) {
-        cado.model('history').borrowBook(this.id, bookID);
+        cado.model('record').lentBook(this.id, bookID);
       } else {
         throw new Error('没书了');
       }
     },
     returnBook(bookID) {
-      cado.model('history').returnBook(this.id, bookID);
+      cado.model('record').returnBook(this.id, bookID);
     },
     sendNotification(template, ...args) {
       if (template === 'borrowBook') {

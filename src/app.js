@@ -6,6 +6,8 @@ import Logger from './logger';
 const app = new Koa();
 const logger = Logger('koa');
 
+app.keys = ['ZrlccFOdfHbnkEiL', 'GFNdT7CNVUfIh6HU'];
+
 app.use(async (ctx, next) => {
   const start = new Date();
   await next();
