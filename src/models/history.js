@@ -50,7 +50,7 @@ const HistoryModel = cado.model('history', {
       }
     },
     returnBook(userID, bookID) {
-      const history = this.findHistory(userID, bookID);
+      const history = this.returnBook(userID, bookID);
       if (!history) {
         throw new Error('没找到借书记录');
       } else {

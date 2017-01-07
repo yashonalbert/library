@@ -25,20 +25,15 @@ const UserModel = cado.model('user', {
       return cado.model('history').getBorrowingHistory(this.id);
     },
     borrowBook(bookID) {
-      const HistoryModel = cado.model('history');
       const stock = cado.model('book').getStock(bookID);
-      const borrowingCount = HistoryModel.getBorrowingBooksCount(this.id);
-      if (stock > 0 || borrowingCount < 2) {
-        HistoryModel.borrowBook(this.id, bookID);
-        this.sendNotification('borrowBook', bookID);
+      if (stock > 0) {
+        cado.model('history').borrowBook(this.id, bookID);
+      } else {
+        throw new Error('没书了');
       }
     },
     returnBook(bookID) {
-      const stock = cado.model('book').getStock(bookID);
-      if (stock > 0) {
-        cado.model('history').borrowBook(bookID);
-        this.sendNotification('borrowBook', bookID);
-      }
+      cado.model('history').returnBook(this.id, bookID);
     },
     sendNotification(template, ...args) {
       if (template === 'borrowBook') {
