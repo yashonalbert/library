@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import Joi from 'joi';
 import cado from '../cado';
 
@@ -33,21 +34,16 @@ const HistoryModel = cado.model('history', {
       });
     },
     findHistory(userID, bookID) {
-      return this.findOne({
+      return _.first(this.findBySort({
         userID,
         bookID,
         status: {
           $in: ['borrowed', 'outdated'],
         },
-      });
+      }, 'lentTime'));
     },
     borrowBook(userID, bookID) {
-      const history = this.findHistory(userID, bookID);
-      if (history) {
-        throw new Error('先还书');
-      } else {
-        this.crate({ userID, bookID });
-      }
+      this.crate({ userID, bookID });
     },
     returnBook(userID, bookID) {
       const history = this.returnBook(userID, bookID);
