@@ -9,11 +9,11 @@ const HistoryModel = cado.model('history', {
   status: Joi.string().valid('confirming', 'rejected', 'borrowed', 'returned', 'outdated').default('confirming'),
 }, {
   indexes: {
-    indices: ['userid', 'bookid', 'status'],
+    indices: ['userID', 'bookID', 'status'],
   },
   foreignKeys: {
-    userid: 'user',
-    bookid: 'book',
+    userID: 'user',
+    bookID: 'book',
   },
   statics: {
     getBorrowingHistory(userID) {

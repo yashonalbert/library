@@ -17,12 +17,6 @@ const BookModel = cado.model('book', {
   summary: Joi.string().required(),
   totalNum: Joi.number().required(),
 }, {
-  indexes: {
-    unique: ['userid'],
-  },
-  foreignKeys: {
-    userid: 'user',
-  },
   statics: {
     getStock(bookID) {
       return this.totalNum - cado.model('history').count({

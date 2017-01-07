@@ -15,7 +15,7 @@ const UserModel = cado.model('user', {
   status: Joi.number().required(),
 }, {
   indexes: {
-    unique: ['userid'],
+    unique: ['corpUserID'],
   },
   statics: {
 
