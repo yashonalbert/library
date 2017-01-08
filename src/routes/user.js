@@ -25,4 +25,8 @@ router.get('/login', async (ctx) => {
   ctx.redirect('/');
 });
 
+router.post('/records', (ctx) => {
+  ctx.body = ctx.user.lentBook(ctx.request.body.bookID);
+});
+
 export default router;

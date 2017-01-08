@@ -57,7 +57,7 @@ const RecordModel = cado.model('record', {
   methods: {
     returnBook() {
       // TODO 非原子判断
-      if (['lent', 'outdated'].indexOf(this.status) !== -1) {
+      if (['lent', 'outdated'].includes(this.status)) {
         this.update({
           status: 'returned',
           returnTime: new Date(),

@@ -19,12 +19,17 @@ const BookModel = cado.model('book', {
 }, {
   statics: {
     getStock(bookID) {
-      return this.totalNum - cado.model('record').count({
-        bookID,
-        status: {
-          $in: ['lent', 'outdated'],
-        },
-      });
+      let stock = 0;
+      const book = this.findById(bookID);
+      if (book) {
+        stock = book.totalNum - cado.model('record').count({
+          bookID,
+          status: {
+            $in: ['lent', 'outdated'],
+          },
+        });
+      }
+      return stock;
     },
   },
   methods: {
