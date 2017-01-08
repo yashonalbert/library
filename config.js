@@ -14,7 +14,7 @@ const defaultConfig = {
 
 function getConfig(path) {
   const configPath = `${path}/config.json`;
-  let config = _.extend(defaultConfig, {
+  let config = _.defaults(defaultConfig, {
     database: `${path}/database.json`,
     logs_dir: `${path}/logs`,
   });
