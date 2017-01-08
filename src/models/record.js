@@ -5,7 +5,7 @@ import cado from '../utils/cado';
 const RecordModel = cado.model('record', {
   userID: Joi.string().required(),
   bookID: Joi.number().required(),
-  lentTime: Joi.date().default(Date.now),
+  lentTime: Joi.date(),
   returnTime: Joi.date(),
   status: Joi.string().valid('confirming', 'rejected', 'lent', 'returned', 'outdated').default('confirming'),
 }, {
@@ -17,6 +17,11 @@ const RecordModel = cado.model('record', {
     bookID: 'book',
   },
   statics: {
+    getConfirmingRecord() {
+      return this.find({
+        status: 'confirming',
+      });
+    },
     getLentRecord(userID) {
       return this.find({
         userID,
@@ -62,6 +67,19 @@ const RecordModel = cado.model('record', {
           status: 'returned',
           returnTime: new Date(),
         });
+      }
+    },
+    confirm(action) {
+      // TODO 非原子判断
+      if (this.status === 'confirming' && ['rejected', 'allowed'].includes(action)) {
+        if (action === 'rejected') {
+          this.update({ status: 'rejected' });
+        } else {
+          this.update({
+            status: 'lent',
+            lentTime: new Date(),
+          });
+        }
       }
     },
   },

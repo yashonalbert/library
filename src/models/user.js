@@ -13,6 +13,7 @@ const UserModel = cado.model('user', {
   weixinID: Joi.string().required(),
   avatar: Joi.string().required(),
   status: Joi.number().required(),
+  role: Joi.string().valid('admin', 'user').default('user'),
 }, {
   indexes: {
     unique: ['corpUserID'],

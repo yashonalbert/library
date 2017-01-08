@@ -1,5 +1,3 @@
-/* eslint-disable import/prefer-default-export */
-
 import UserModel from './models/user';
 
 const authentication = (ctx, next) => {
@@ -12,4 +10,12 @@ const authentication = (ctx, next) => {
   }
 };
 
-export { authentication };
+const requireAdmin = (ctx, next) => {
+  if (ctx.user || ctx.user.role === 'admin') {
+    next();
+  } else {
+    ctx.throw(403);
+  }
+};
+
+export { authentication, requireAdmin };
