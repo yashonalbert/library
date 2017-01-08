@@ -7,7 +7,8 @@
     "build": "babel src -d lib",
     "test": "mocha --compilers js:babel-core/register test/*.test.js",
     "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha -- test/*.test.js",
-    "electron": "babel src -d lib ; electron ."
+    "electron": "babel src -d lib ; electron .",
+    "nexe": "babel src -d lib ; node nexe.js"
   },
   "repository": {
     "type": "git",
