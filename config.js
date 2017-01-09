@@ -2,6 +2,7 @@ const fs = require('fs');
 const _ = require('lodash');
 
 const defaultConfig = {
+  domain: '',
   port: 3000,
   database: undefined,
   wechat: {

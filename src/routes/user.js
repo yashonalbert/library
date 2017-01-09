@@ -4,10 +4,10 @@ import wechat from '../utils/wechat';
 import UserModel from '../models/user';
 
 const router = Router({ prefix: '/user' });
+const { config } = global.app;
 
 router.get('/oauth2', (ctx) => {
-  // TODO 将 URL 中变量换成正式的
-  ctx.redirect('https://open.weixin.qq.com/connect/oauth2/authorize?appid=CORPID&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE&state=STATE#wechat_redirect');
+  ctx.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.wechat.corpid}&redirect_uri=${encodeURIComponent(`http://${config.domain}/user/login`)}&response_type=code&scope=snsapi_base`);
 });
 
 router.get('/login', async (ctx) => {
