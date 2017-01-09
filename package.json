@@ -21,7 +21,6 @@
     "babel-polyfill": "^6.20.0",
     "bluebird": "^3.4.7",
     "cado": "faceair/cado",
-    "electron": "^1.4.13",
     "joi": "^10.1.0",
     "koa": "next",
     "koa-bodyparser": "3",

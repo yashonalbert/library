@@ -1,4 +1,4 @@
-/* eslint-disable import/newline-after-import */
+/* eslint-disable import/newline-after-import, import/no-extraneous-dependencies */
 
 // replace global.Promise to bluebird
 global.Promise = require('bluebird');

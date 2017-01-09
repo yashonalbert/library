@@ -2,14 +2,14 @@ const fs = require('fs');
 const _ = require('lodash');
 
 const defaultConfig = {
-  port: '3000',
-  database: '',
+  port: 3000,
+  database: undefined,
   wechat: {
     corpid: '',
     secret: '',
     agentid: '',
   },
-  logs_dir: '',
+  logs_dir: undefined,
 };
 
 function getConfig(path) {
