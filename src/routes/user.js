@@ -14,8 +14,8 @@ router.get('/login', async (ctx) => {
   if (!ctx.query.code) {
     ctx.throw(400, 'code is required !');
   }
-  const { UserId } = await Promise.promisify(wechat.getUserIdByCode)(ctx.query.code);
-  const result = await Promise.promisify(wechat.getUser)(UserId);
+  const { UserId } = await Promise.promisify(wechat.getUserIdByCode, { context: wechat })(ctx.query.code);
+  const result = await Promise.promisify(wechat.getUser, { context: wechat })(UserId);
   const userData = _.extend(_.pick(result, ['name', 'department', 'position', 'mobile',
     'gender', 'email', 'avatar', 'status']), { weixinID: result.weixinid, corpUserID: result.userid });
 
