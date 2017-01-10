@@ -4,22 +4,20 @@ import RecordModel from '../models/record';
 
 const router = Router({ prefix: '/users' });
 
-router.get('/records', requireAdmin, (ctx) => {
-  let records = RecordModel.getConfirmingRecord();
-  records = records.map((record) => {
-    record.user = record.populate('userID');
-    record.book = record.populate('bookID');
-    return record;
-  });
-  ctx.body = records;
+router.param('recordID', requireAdmin, async (recordID, next) => {
+  this.record = await RecordModel.findById(recordID);
+  await next();
 });
 
-router.get('/records/:recordID', requireAdmin, (ctx) => {
-  ctx.body = RecordModel.findById(ctx.params.recordID);
+router.get('/records', requireAdmin, async (ctx) => {
+  ctx.body = await RecordModel.getConfirmingRecord();
 });
 
-router.post('/records/:recordID', requireAdmin, (ctx) => {
-  const record = RecordModel.findById(ctx.params.recordID);
-  record.confirm(ctx.request.body.action);
+router.get('/records/:recordID', async (ctx) => {
+  ctx.body = this.record;
+});
+
+router.post('/records/:recordID', async (ctx) => {
+  await ctx.record.confirm(ctx.request.body.action);
   ctx.body = { status: 'success' };
 });

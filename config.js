@@ -16,7 +16,7 @@ const defaultConfig = {
 function getConfig(path) {
   const configPath = `${path}/config.json`;
   let config = _.defaults(defaultConfig, {
-    database: `${path}/database.json`,
+    database: `${path}/library.db`,
     logs_dir: `${path}/logs`,
   });
   if (fs.existsSync(configPath)) {

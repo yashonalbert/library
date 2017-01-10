@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+
 import _ from 'lodash';
 import Router from 'koa-router';
 import wechat from '../utils/wechat';
@@ -19,14 +21,14 @@ router.get('/login', async (ctx) => {
   const userData = _.extend(_.pick(result, ['name', 'department', 'position', 'mobile',
     'gender', 'email', 'avatar', 'status']), { weixinID: result.weixinid, corpUserID: result.userid });
 
-  const user = UserModel.create(userData);
+  const user = await UserModel.create(userData);
   ctx.cookies.set('userID', user.id, { signed: true });
 
   ctx.redirect('/');
 });
 
-router.post('/records', (ctx) => {
-  ctx.body = ctx.user.lentBook(ctx.request.body.bookID);
+router.post('/records', async (ctx) => {
+  ctx.body = await ctx.user.lentBook(ctx.request.body.bookID);
 });
 
 export default router;

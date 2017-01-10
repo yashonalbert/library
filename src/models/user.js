@@ -1,40 +1,71 @@
 import _ from 'lodash';
-import Joi from 'joi';
-import cado from '../utils/cado';
+import Sequelize from 'sequelize';
+import sequelize from '../utils/sequelize';
 
-const UserModel = cado.model('user', {
-  corpUserID: Joi.string().required(),
-  name: Joi.string().required(),
-  department: Joi.array().items(Joi.number()).required(),
-  position: Joi.string().required(),
-  mobile: Joi.string().required(),
-  gender: Joi.number().required(),
-  email: Joi.string().required(),
-  weixinID: Joi.string().required(),
-  avatar: Joi.string().required(),
-  status: Joi.number().required(),
-  role: Joi.string().valid('admin', 'user').default('user'),
+const UserModel = sequelize.define('user', {
+  corpUserID: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  department: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  position: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  mobile: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  gender: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
+  email: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  weixinID: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  avatar: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  status: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
+  role: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
 }, {
-  indexes: {
-    unique: ['corpUserID'],
-  },
-  statics: {
-
-  },
-  methods: {
+  indexes: [{
+    unique: true,
+    fields: ['corpUserID'],
+  }],
+  instanceMethods: {
     getLentRecord() {
-      return cado.model('record').getLentRecord(this.id);
+      return sequelize.model('record').getLentRecord(this.id);
     },
     lentBook(bookID) {
-      const stock = cado.model('book').getStock(bookID);
-      if (stock > 0) {
-        cado.model('record').lentBook(this.id, bookID);
-      } else {
-        throw new Error('没书了');
-      }
+      sequelize.model('book').getStock(bookID).then((stock) => {
+        if (stock <= 0) {
+          throw new Error('没书了');
+        }
+        return sequelize.model('record').lentBook(this.id, bookID);
+      });
     },
     returnBook(bookID) {
-      cado.model('record').returnBook(this.id, bookID);
+      return sequelize.model('record').returnBook(this.id, bookID);
     },
     sendNotification(template, ...args) {
       if (template === 'borrowBook') {

@@ -1,20 +1,20 @@
 import UserModel from './models/user';
 
-const authentication = (ctx, next) => {
+const authentication = async (ctx, next) => {
   const userID = ctx.cookies.get('userID', { signed: true });
-  ctx.user = UserModel.findById(userID);
+  ctx.user = await UserModel.findById(userID);
   if (!ctx.user && !['/user/oauth2', '/user/login'].includes(ctx.path)) {
     ctx.redirect('/user/oauth2');
   } else {
-    next();
+    await next();
   }
 };
 
-const requireAdmin = (ctx, next) => {
-  if (ctx.user || ctx.user.role === 'admin') {
-    next();
-  } else {
+const requireAdmin = async (ctx, next) => {
+  if (!ctx.user || ctx.user.role !== 'admin') {
     ctx.throw(403);
+  } else {
+    await next();
   }
 };
 

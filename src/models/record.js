@@ -1,88 +1,112 @@
-import _ from 'lodash';
-import Joi from 'joi';
-import cado from '../utils/cado';
+import Sequelize from 'sequelize';
+import sequelize from '../utils/sequelize';
 
-const RecordModel = cado.model('record', {
-  userID: Joi.string().required(),
-  bookID: Joi.number().required(),
-  lentTime: Joi.date(),
-  returnTime: Joi.date(),
-  status: Joi.string().valid('confirming', 'rejected', 'lent', 'returned', 'outdated').default('confirming'),
+const RecordModel = sequelize.define('record', {
+  userID: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'user',
+      key: 'id',
+    },
+  },
+  bookID: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'book',
+      key: 'id',
+    },
+  },
+  lentTime: Sequelize.DATE,
+  returnTime: Sequelize.DATE,
+  status: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
 }, {
-  indexes: {
-    indices: ['userID', 'bookID', 'status'],
-  },
-  foreignKeys: {
-    userID: 'user',
-    bookID: 'book',
-  },
-  statics: {
+  classMethods: {
     getConfirmingRecord() {
-      return this.find({
-        status: 'confirming',
+      return this.findAll({
+        where: {
+          status: 'confirming',
+        },
+        includes: [sequelize.model('book'), sequelize.model('user')],
       });
     },
     getLentRecord(userID) {
-      return this.find({
-        userID,
-        status: {
-          $in: ['lent', 'returned', 'outdated'],
+      return this.findAll({
+        where: {
+          userID,
+          status: {
+            in: ['lent', 'returned', 'outdated'],
+          },
         },
       });
     },
     getLentBooksCount(userID) {
       return this.count({
-        userID,
-        status: {
-          $in: ['lent', 'outdated'],
+        where: {
+          userID,
+          status: {
+            in: ['lent', 'outdated'],
+          },
         },
       });
     },
     findRecord(userID, bookID) {
-      return _.first(this.findBySort({
-        userID,
-        bookID,
-        status: {
-          $in: ['lent', 'outdated'],
+      return this.findOne({
+        where: {
+          userID,
+          bookID,
+          status: {
+            in: ['lent', 'outdated'],
+          },
         },
-      }, 'lentTime'));
+        order: [['lentTime', 'ASC']],
+      });
     },
     lentBook(userID, bookID) {
       this.crate({ userID, bookID });
     },
     returnBook(userID, bookID) {
-      const record = this.returnBook(userID, bookID);
-      if (!record) {
-        throw new Error('没找到借书记录');
-      } else {
-        record.returnBook();
-      }
+      this.findRecord(userID, bookID).then((record) => {
+        if (!record) {
+          throw new Error('没找到借书记录');
+        }
+        return record.returnBook();
+      });
     },
   },
-  methods: {
+  instanceMethods: {
     returnBook() {
       // TODO 非原子判断
       if (['lent', 'outdated'].includes(this.status)) {
-        this.update({
+        return this.update({
           status: 'returned',
           returnTime: new Date(),
         });
       }
+      return Promise.resolve(0);
     },
     confirm(action) {
       // TODO 非原子判断
       if (this.status === 'confirming' && ['rejected', 'allowed'].includes(action)) {
+        let actionPromise;
         if (action === 'rejected') {
-          this.update({ status: 'rejected' });
+          actionPromise = this.update({ status: 'rejected' });
         } else {
-          this.update({
+          actionPromise = this.update({
             status: 'lent',
             lentTime: new Date(),
           });
         }
+        return actionPromise;
       }
+      return Promise.resolve(0);
     },
   },
 });
+
 
 export default RecordModel;

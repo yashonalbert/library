@@ -1,39 +1,70 @@
-import Joi from 'joi';
-import cado from '../utils/cado';
+import Sequelize from 'sequelize';
+import sequelize from '../utils/sequelize';
 
-const BookModel = cado.model('book', {
-  doubanID: Joi.number().required(),
-  isbn: Joi.string().required(),
-  title: Joi.string().required(),
-  subtitle: Joi.string().required(),
-  origin_title: Joi.string().required(),
-  author: Joi.array().items(Joi.string()).required(),
-  translator: Joi.array().items(Joi.string()).required(),
-  image: Joi.string().required(),
-  numRaters: Joi.number().required(),
-  averageRating: Joi.number().required(),
-  pubdate: Joi.string().required(),
-  publisher: Joi.string().required(),
-  summary: Joi.string().required(),
-  totalNum: Joi.number().required(),
+const BookModel = sequelize.define('project', {
+  doubanID: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
+  isbn: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  title: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  subtitle: Sequelize.STRING,
+  origin_title: Sequelize.STRING,
+  author: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  translator: Sequelize.STRING,
+  image: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  numRaters: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
+  averageRating: {
+    type: Sequelize.FLOAT,
+    allowNull: false,
+  },
+  pubdate: Sequelize.STRING,
+  publisher: Sequelize.STRING,
+  summary: Sequelize.STRING,
+  totalNum: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
 }, {
-  statics: {
+  indexes: [{
+    unique: true,
+    fields: ['doubanID'],
+  }],
+  classMethods: {
     getStock(bookID) {
-      let stock = 0;
-      const book = this.findById(bookID);
-      if (book) {
-        stock = book.totalNum - cado.model('record').count({
-          bookID,
-          status: {
-            $in: ['lent', 'outdated'],
-          },
-        });
-      }
-      return stock;
+      this.findById(bookID).then((book) => {
+        if (book) {
+          return sequelize.model('record').count({
+            where: {
+              bookID,
+              status: {
+                in: ['lent', 'outdated'],
+              },
+            },
+          }).then(recordCount => book.totalNum - recordCount);
+        }
+        return 0;
+      });
     },
   },
-  methods: {
+  instanceMethods: {
     getStock() {
+      // TODO 直接查 record 可以减少一次查询
       return this.constructor.getStock(this.id);
     },
   },
