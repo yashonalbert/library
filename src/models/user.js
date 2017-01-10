@@ -24,7 +24,7 @@ const UserModel = sequelize.define('user', {
     allowNull: false,
   },
   gender: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
     allowNull: false,
   },
   email: {
@@ -46,6 +46,7 @@ const UserModel = sequelize.define('user', {
   role: {
     type: Sequelize.STRING,
     allowNull: false,
+    defaultValue: 'user',
   },
 }, {
   indexes: [{

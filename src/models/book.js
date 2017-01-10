@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import sequelize from '../utils/sequelize';
 
-const BookModel = sequelize.define('project', {
+const BookModel = sequelize.define('book', {
   doubanID: {
     type: Sequelize.INTEGER,
     allowNull: false,

@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 
 import _ from 'lodash';
+import Promise from 'bluebird';
 import Router from 'koa-router';
 import wechat from '../utils/wechat';
 import UserModel from '../models/user';
@@ -18,10 +19,11 @@ router.get('/login', async (ctx) => {
   }
   const { UserId } = await Promise.promisify(wechat.getUserIdByCode, { context: wechat })(ctx.query.code);
   const result = await Promise.promisify(wechat.getUser, { context: wechat })(UserId);
-  const userData = _.extend(_.pick(result, ['name', 'department', 'position', 'mobile',
-    'gender', 'email', 'avatar', 'status']), { weixinID: result.weixinid, corpUserID: result.userid });
+  const userData = _.extend(_.pick(result, ['name', 'position', 'mobile', 'gender', 'email', 'avatar', 'status']),
+    { department: _.toString(result.department), weixinID: result.weixinid, corpUserID: result.userid });
 
-  const user = await UserModel.create(userData);
+  await UserModel.upsert(userData);
+  const user = await UserModel.findOne({ where: { corpUserID: userData.corpUserID } });
   ctx.cookies.set('userID', user.id, { signed: true });
 
   ctx.redirect('/');
