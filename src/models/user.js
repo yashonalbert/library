@@ -58,7 +58,7 @@ const UserModel = sequelize.define('user', {
       return sequelize.model('record').getLentRecord(this.id);
     },
     lentBook(bookID) {
-      sequelize.model('book').getStock(bookID).then((stock) => {
+      return sequelize.model('book').getStock(bookID).then((stock) => {
         if (stock <= 0) {
           throw new Error('没书了');
         }

@@ -47,7 +47,7 @@ const BookModel = sequelize.define('book', {
   }],
   classMethods: {
     getStock(bookID) {
-      this.findById(bookID).then((book) => {
+      return this.findById(bookID).then((book) => {
         if (book) {
           return sequelize.model('record').count({
             where: {

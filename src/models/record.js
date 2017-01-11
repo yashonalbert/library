@@ -67,7 +67,11 @@ const RecordModel = sequelize.define('record', {
       });
     },
     lentBook(userID, bookID) {
-      this.crate({ userID, bookID });
+      return this.create({
+        userID,
+        bookID,
+        status: 'confirming',
+      });
     },
     returnBook(userID, bookID) {
       this.findRecord(userID, bookID).then((record) => {
@@ -107,6 +111,5 @@ const RecordModel = sequelize.define('record', {
     },
   },
 });
-
 
 export default RecordModel;
