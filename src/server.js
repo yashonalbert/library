@@ -3,10 +3,8 @@ import 'babel-polyfill';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Logger from './utils/logger';
-import sequelize from './utils/sequelize';
-import userRoute from './routes/user';
-import bookRoute from './routes/book';
-import adminRoute from './routes/admin';
+import { userRoute, bookRoute, adminRoute } from './routes';
+import { sequelize } from './models';
 import { authentication } from './middleware';
 
 const server = new Koa();
