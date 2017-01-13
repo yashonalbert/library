@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 import { requireAdmin } from '../middleware';
-import RecordModel from '../models/record';
+import { RecordModel } from '../models';
 
 const router = Router({ prefix: '/users' });
 

@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import BookModel from '../models/book';
+import { BookModel } from '../models';
 
 const router = Router({ prefix: '/books' });
 

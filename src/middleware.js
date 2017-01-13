@@ -1,4 +1,4 @@
-import UserModel from './models/user';
+import { UserModel } from './models';
 
 const authentication = async (ctx, next) => {
   const userID = ctx.cookies.get('userID', { signed: true });

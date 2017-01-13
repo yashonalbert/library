@@ -1,5 +1,6 @@
-const fs = require('fs');
-const _ = require('lodash');
+import fs from 'fs';
+import _ from 'lodash';
+import path from 'path';
 
 const defaultConfig = {
   domain: '',
@@ -13,11 +14,11 @@ const defaultConfig = {
   logs_dir: undefined,
 };
 
-function getConfig(path) {
-  const configPath = `${path}/config.json`;
+function getConfig(workPath) {
+  const configPath = `${workPath}/config.json`;
   let config = _.defaults(defaultConfig, {
-    database: `${path}/library.sqlite`,
-    logs_dir: `${path}/logs`,
+    database: `${workPath}/library.sqlite`,
+    logs_dir: `${workPath}/logs`,
   });
   if (fs.existsSync(configPath)) {
     config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
@@ -28,4 +29,6 @@ function getConfig(path) {
   return config;
 }
 
-exports.getConfig = getConfig;
+const config = getConfig(process.env.WorkPath ? process.env.WorkPath : path.join(__dirname, '..', '..'));
+
+export default config;

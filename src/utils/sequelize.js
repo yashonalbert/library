@@ -1,6 +1,5 @@
 import Sequelize from 'sequelize';
-
-const { config } = global.app;
+import config from './config';
 
 const sequelize = new Sequelize('library', null, null, {
   dialect: 'sqlite',

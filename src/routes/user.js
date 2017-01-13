@@ -4,7 +4,7 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 import Router from 'koa-router';
 import wechat from '../utils/wechat';
-import UserModel from '../models/user';
+import { UserModel } from '../models';
 
 const router = Router({ prefix: '/user' });
 const { config } = global.app;

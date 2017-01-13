@@ -2,22 +2,6 @@ import Sequelize from 'sequelize';
 import sequelize from '../utils/sequelize';
 
 const RecordModel = sequelize.define('record', {
-  userID: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'user',
-      key: 'id',
-    },
-  },
-  bookID: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'book',
-      key: 'id',
-    },
-  },
   lentTime: Sequelize.DATE,
   returnTime: Sequelize.DATE,
   status: {

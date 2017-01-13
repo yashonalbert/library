@@ -1,15 +1,11 @@
 /* eslint-disable */
 
-// replace global.Promise to bluebird
-global.Promise = require('bluebird');
-
 // require electron
 const electron = require('electron');
-const { getConfig } = require('./config');
+const app = electron.app;
 
-// define global app & config
-const app = global.app = electron.app;
-const config = app.config = getConfig(app.getAppPath());
+process.env.WorkPath = app.getAppPath();
+const { default: config } = require('./lib/utils/config');
 
 // start web server
 const { default: server } = require('./lib/server');
