@@ -5,9 +5,9 @@ import Promise from 'bluebird';
 import Router from 'koa-router';
 import wechat from '../utils/wechat';
 import { UserModel } from '../models';
+import config from '../utils/config';
 
 const router = Router({ prefix: '/user' });
-const { config } = global.app;
 
 router.get('/oauth2', (ctx) => {
   ctx.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.wechat.corpid}&redirect_uri=${encodeURIComponent(`http://${config.domain}/user/login`)}&response_type=code&scope=snsapi_base`);

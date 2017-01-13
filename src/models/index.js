@@ -1,5 +1,3 @@
-console.log(global);
-
 import sequelize from '../utils/sequelize';
 import RecordModel from './record';
 import BookModel from './book';
