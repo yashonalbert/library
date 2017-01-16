@@ -4,10 +4,19 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 import Router from 'koa-router';
 import wechat from '../utils/wechat';
-import { UserModel } from '../models';
+import { RecordModel, UserModel } from '../models';
 import config from '../utils/config';
 
 const router = Router({ prefix: '/user' });
+
+router.get('/jssign', async (ctx) => {
+  const param = {
+    debug: false,
+    jsApiList: ctx.query.jsApiList.split(','),
+    url: ctx.query.url,
+  };
+  ctx.body = await Promise.promisify(wechat.getJsConfig, { context: wechat })(param);
+});
 
 router.get('/oauth2', (ctx) => {
   ctx.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.wechat.corpid}&redirect_uri=${encodeURIComponent(`http://${config.domain}/user/login`)}&response_type=code&scope=snsapi_base`);
@@ -32,5 +41,19 @@ router.get('/login', async (ctx) => {
 router.post('/records', async (ctx) => {
   ctx.body = await ctx.user.lentBook(ctx.request.body.bookID);
 });
+
+router.get('/records', async (ctx) => {
+  ctx.body = await ctx.user.getLentRecord();
+});
+
+router.get('/records/:recordID', async (ctx) => {
+  const record = await RecordModel.findById(ctx.params.recordID);
+  if (record.userID === ctx.user.id) {
+    ctx.body = record;
+  } else {
+    ctx.body = {};
+  }
+});
+
 
 export default router;
