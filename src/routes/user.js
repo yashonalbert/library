@@ -39,7 +39,7 @@ router.get('/login', async (ctx) => {
 });
 
 router.post('/records', async (ctx) => {
-  ctx.body = await ctx.user.lentBook(ctx.request.body.bookID);
+  ctx.body = await ctx.user.lentBook(Number(ctx.request.body.bookID));
 });
 
 router.get('/records', async (ctx) => {
