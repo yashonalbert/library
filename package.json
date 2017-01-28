@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "build": "babel src -d lib",
-    "test": "rm library.sqlite; mocha --timeout 5000 --compilers js:babel-core/register test/*.test.js",
+    "test": "rm -rf ./test/library.sqlite ./test/logs ./test/config.json ; cross-env WorkPath=./test mocha --timeout 5000 --compilers js:babel-core/register test/*.test.js",
     "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha -- test/*.test.js",
     "electron": "babel src -d lib ; electron .",
     "nexe": "babel src -d lib ; node nexe.js"
@@ -34,6 +34,7 @@
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-preset-env": "^1.1.4",
+    "cross-env": "^3.1.4",
     "eslint": "^3.9.1",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-plugin-import": "^2.1.0",

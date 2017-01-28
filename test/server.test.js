@@ -1,7 +1,5 @@
 /* eslint-disable import/first */
 
-process.env.WorkPath = __dirname;
-
 import config from '../src/utils/config';
 import server from '../src/server';
 import { RecordModel, BookModel, UserModel, sequelize } from '../src/models';
@@ -31,7 +29,7 @@ describe('Server', () => {
         .query({
           access_token: 'ACCESS_TOKEN',
           code: 'CODE',
-          agentid: '76',
+          agentid: config.wechat.agentid,
         })
         .reply(200, {
           UserId: 'wms',
@@ -58,7 +56,7 @@ describe('Server', () => {
       const j = request.jar();
       const cookie1 = request.cookie('userID=1');
       const cookie2 = request.cookie('userID.sig=7hP1dtvjM5-uWk0bCXNzxJc0Np8');
-      const uri = `http://${config.domain}/user/login?code=CODE`;
+      const uri = `http://localhost:${config.port}/user/login?code=CODE`;
       j.setCookie(cookie1, uri);
       j.setCookie(cookie2, uri);
       request({
@@ -97,13 +95,14 @@ describe('Server', () => {
       const j = request.jar();
       const cookie1 = request.cookie('userID=1');
       const cookie2 = request.cookie('userID.sig=7hP1dtvjM5-uWk0bCXNzxJc0Np8');
-      const uri = `http://${config.domain}/user/records`;
+      const uri = `http://localhost:${config.port}/user/records`;
       j.setCookie(cookie1, uri);
       j.setCookie(cookie2, uri);
       request.post({
         uri,
         jar: j,
         form: { bookID: '1' },
+        followRedirect: false,
       }, (error, response, body) => {
         assert.equal(JSON.parse(body).id, 1);
         assert.equal(JSON.parse(body).status, 'confirming');
@@ -129,12 +128,13 @@ describe('Server', () => {
       const j = request.jar();
       const cookie1 = request.cookie('userID=1');
       const cookie2 = request.cookie('userID.sig=7hP1dtvjM5-uWk0bCXNzxJc0Np8');
-      const uri = `http://${config.domain}/users/records`;
+      const uri = `http://localhost:${config.port}/users/records`;
       j.setCookie(cookie1, uri);
       j.setCookie(cookie2, uri);
       request({
         uri,
         jar: j,
+        followRedirect: false,
       }, (error, response, body) => {
         assert.equal(JSON.parse(body).length, 1);
         assert.equal(JSON.parse(body)[0].id, 1);
@@ -148,12 +148,13 @@ describe('Server', () => {
       const j = request.jar();
       const cookie1 = request.cookie('userID=1');
       const cookie2 = request.cookie('userID.sig=7hP1dtvjM5-uWk0bCXNzxJc0Np8');
-      const uri = `http://${config.domain}/users/records/1`;
+      const uri = `http://localhost:${config.port}/users/records/1`;
       j.setCookie(cookie1, uri);
       j.setCookie(cookie2, uri);
       request({
         uri,
         jar: j,
+        followRedirect: false,
       }, (error, response, body) => {
         assert.equal(JSON.parse(body).id, 1);
         assert.equal(JSON.parse(body).status, 'confirming');
@@ -167,13 +168,14 @@ describe('Server', () => {
         const j = request.jar();
         const cookie1 = request.cookie('userID=1');
         const cookie2 = request.cookie('userID.sig=7hP1dtvjM5-uWk0bCXNzxJc0Np8');
-        const uri = `http://${config.domain}/users/records/1`;
+        const uri = `http://localhost:${config.port}/users/records/1`;
         j.setCookie(cookie1, uri);
         j.setCookie(cookie2, uri);
         request.post({
           uri,
           jar: j,
           form: { action: 'rejected' },
+          followRedirect: false,
         }, (error, response, body) => {
           assert.deepEqual(JSON.parse(body), { status: 'success' });
           done();
@@ -204,13 +206,14 @@ describe('Server', () => {
         const j = request.jar();
         const cookie1 = request.cookie('userID=1');
         const cookie2 = request.cookie('userID.sig=7hP1dtvjM5-uWk0bCXNzxJc0Np8');
-        const uri = `http://${config.domain}/users/records/1`;
+        const uri = `http://localhost:${config.port}/users/records/1`;
         j.setCookie(cookie1, uri);
         j.setCookie(cookie2, uri);
         request.post({
           uri,
           jar: j,
           form: { action: 'allowed' },
+          followRedirect: false,
         }, (error, response, body) => {
           assert.deepEqual(JSON.parse(body), { status: 'success' });
           done();
@@ -229,12 +232,13 @@ describe('Server', () => {
       const j = request.jar();
       const cookie1 = request.cookie('userID=1');
       const cookie2 = request.cookie('userID.sig=7hP1dtvjM5-uWk0bCXNzxJc0Np8');
-      const uri = `http://${config.domain}/books/1`;
+      const uri = `http://localhost:${config.port}/books/1`;
       j.setCookie(cookie1, uri);
       j.setCookie(cookie2, uri);
       request({
         uri,
         jar: j,
+        followRedirect: false,
       }, (error, response, body) => {
         assert.equal(JSON.parse(body).id, 1);
         assert.equal(JSON.parse(body).doubanID, '1003078');

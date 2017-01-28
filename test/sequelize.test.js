@@ -1,7 +1,5 @@
 /* eslint-disable import/first */
 
-process.env.WorkPath = __dirname;
-
 import assert from 'assert';
 import { RecordModel, BookModel, UserModel, sequelize } from '../src/models';
 
