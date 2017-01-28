@@ -15,11 +15,13 @@ router.get('/jssign', async (ctx) => {
     jsApiList: ctx.query.jsApiList.split(','),
     url: ctx.query.url,
   };
-  ctx.body = await Promise.promisify(wechat.getJsConfig, { context: wechat })(param);
+  const jsConfig = await Promise.promisify(wechat.getJsConfig, { context: wechat })(param);
+  jsConfig.timestamp = Number(jsConfig.timestamp);
+  ctx.body = jsConfig;
 });
 
 router.get('/oauth2', (ctx) => {
-  ctx.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.wechat.corpid}&redirect_uri=${encodeURIComponent(`http://${config.domain}/user/login`)}&response_type=code&scope=snsapi_base`);
+  ctx.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.wechat.corpid}&redirect_uri=${encodeURIComponent(`http://${config.domain}/api/user/login`)}&response_type=code&scope=snsapi_base`);
 });
 
 router.get('/login', async (ctx) => {
@@ -34,6 +36,7 @@ router.get('/login', async (ctx) => {
   await UserModel.upsert(userData);
   const user = await UserModel.findOne({ where: { corpUserID: userData.corpUserID } });
   ctx.cookies.set('userID', user.id, { signed: true });
+  ctx.cookies.set('loggedIn', 1, { httpOnly: false });
 
   ctx.redirect('/');
 });

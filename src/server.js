@@ -1,6 +1,7 @@
 import 'babel-polyfill';
 
 import Koa from 'koa';
+import cors from 'kcors';
 import bodyParser from 'koa-bodyparser';
 import Logger from './utils/logger';
 import { userRoute, bookRoute, adminRoute } from './routes';
@@ -18,6 +19,7 @@ server.use(async (ctx, next) => {
   const ms = new Date() - start;
   logger.info(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
+server.use(cors());
 server.use(bodyParser());
 server.use(authentication);
 

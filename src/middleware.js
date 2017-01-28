@@ -4,7 +4,7 @@ const authentication = async (ctx, next) => {
   const userID = ctx.cookies.get('userID', { signed: true });
   ctx.user = await UserModel.findById(userID);
   if (!ctx.user && !['/user/oauth2', '/user/login'].includes(ctx.path)) {
-    ctx.redirect('/user/oauth2');
+    ctx.redirect('/api/user/oauth2');
   } else {
     await next();
   }

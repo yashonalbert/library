@@ -17,27 +17,27 @@ const UserModel = sequelize.define('user', {
   },
   position: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   mobile: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   gender: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   email: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   weixinID: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   avatar: {
     type: Sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   status: {
     type: Sequelize.INTEGER,

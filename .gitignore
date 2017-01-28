@@ -5,5 +5,5 @@ lib
 yarn.lock
 config.json
 database.json
-library.sqlite
+library.*
 tmp
