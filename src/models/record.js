@@ -10,12 +10,25 @@ const RecordModel = sequelize.define('record', {
   },
 }, {
   classMethods: {
-    getConfirmingRecord() {
+    getRecordsByStatus(status) {
+      if (status == 'confirming') {
+        status = 'confirming';
+      } else if (status == 'lent') {
+        status = { in: ['lent', 'returned', 'outdated'] };
+      } else {
+        return Promise.resolve([]);
+      }
       return this.findAll({
         where: {
-          status: 'confirming',
+          status,
         },
-        includes: [sequelize.model('book'), sequelize.model('user')],
+        include: [{
+          model: sequelize.model('book'),
+          as: 'book',
+        }, {
+          model: sequelize.model('user'),
+          as: 'user',
+        }],
       });
     },
     getLentRecord(userID) {
@@ -26,6 +39,13 @@ const RecordModel = sequelize.define('record', {
             in: ['lent', 'returned', 'outdated'],
           },
         },
+        include: [{
+          model: sequelize.model('book'),
+          as: 'book',
+        }, {
+          model: sequelize.model('user'),
+          as: 'user',
+        }],
       });
     },
     getLentBooksCount(userID) {
@@ -36,6 +56,17 @@ const RecordModel = sequelize.define('record', {
             in: ['lent', 'outdated'],
           },
         },
+      });
+    },
+    getRecordById(recordID) {
+      return this.findById(recordID, {
+        include: [{
+          model: sequelize.model('book'),
+          as: 'book',
+        }, {
+          model: sequelize.model('user'),
+          as: 'user',
+        }],
       });
     },
     findRecord(userID, bookID) {

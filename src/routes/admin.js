@@ -5,12 +5,12 @@ import { RecordModel } from '../models';
 const router = Router({ prefix: '/users' });
 
 router.param('recordID', async (recordID, ctx, next) => {
-  ctx.record = await RecordModel.findById(recordID);
+  ctx.record = await RecordModel.getRecordById(recordID);
   await next();
 });
 
 router.get('/records', requireAdmin, async (ctx) => {
-  ctx.body = await RecordModel.getConfirmingRecord();
+  ctx.body = await RecordModel.getRecordsByStatus(ctx.query.status);
 });
 
 router.get('/records/:recordID', requireAdmin, async (ctx) => {

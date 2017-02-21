@@ -11,7 +11,7 @@ const router = Router({ prefix: '/user' });
 
 router.get('/jssign', async (ctx) => {
   const param = {
-    debug: false,
+    debug: ctx.query.debug,
     jsApiList: ctx.query.jsApiList.split(','),
     url: ctx.query.url,
   };
@@ -50,7 +50,7 @@ router.get('/records', async (ctx) => {
 });
 
 router.get('/records/:recordID', async (ctx) => {
-  const record = await RecordModel.findById(ctx.params.recordID);
+  const record = await RecordModel.getRecordById(ctx.params.recordID);
   if (record.userID === ctx.user.id) {
     ctx.body = record;
   } else {
