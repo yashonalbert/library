@@ -57,6 +57,30 @@ const UserModel = sequelize.define('user', {
     getLentRecord() {
       return sequelize.model('record').getLentRecord(this.id);
     },
+    lentInfo(isbn) {
+      return sequelize.model('book').findOne({
+        where: {
+          isbn,
+        },
+      }).then((book) => {
+        if (book) {
+          return this.getLentRecord().then((records) => {
+            if (records[0].status === 'outdated' || records[1].status === 'outdated') {
+              return Promise.resolve({ book, check: 'record status outdated' });
+            } else if (records >= 2) {
+              return Promise.resolve({ book, check: 'record >= 2' });
+            }
+            return sequelize.model('book').getStock(book.id).then((stock) => {
+              if (stock <= 0) {
+                return Promise.resolve({ book, check: 'no stock' });
+              }
+              return Promise.resolve({ book, check: stock });
+            });
+          });
+        }
+        return Promise.resolve({ book: {}, check: 'no book' });
+      });
+    },
     lentBook(bookID) {
       return sequelize.model('book').getStock(bookID).then((stock) => {
         if (stock <= 0) {
