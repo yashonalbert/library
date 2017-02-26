@@ -41,10 +41,6 @@ router.get('/login', async (ctx) => {
   ctx.redirect('/');
 });
 
-router.get('/lentInfo', async (ctx) => {
-  ctx.body = await ctx.user.lentInfo(ctx.query.isbn);
-});
-
 router.post('/records', async (ctx) => {
   ctx.body = await ctx.user.lentBook(Number(ctx.request.body.bookID));
 });

@@ -57,37 +57,24 @@ const UserModel = sequelize.define('user', {
     getLentRecord() {
       return sequelize.model('record').getLentRecord(this.id);
     },
-    lentInfo(isbn) {
-      return sequelize.model('book').findOne({
-        where: {
-          isbn,
-        },
-      }).then((book) => {
-        if (book) {
-          return this.getLentRecord().then((records) => {
-            if (records[0].status === 'outdated' || records[1].status === 'outdated') {
-              return Promise.resolve({ book, check: 'record status outdated' });
-            } else if (records >= 2) {
-              return Promise.resolve({ book, check: 'record >= 2' });
-            }
-            return sequelize.model('book').getStock(book.id).then((stock) => {
-              if (stock <= 0) {
-                return Promise.resolve({ book, check: 'no stock' });
-              }
-              return Promise.resolve({ book, check: stock });
-            });
-          });
+    lentValidation(bookID) {
+      return this.getLentRecord().then((records) => {
+        console.log(records.map(record => record.getDataValue('status')).indexOf('outdated'));
+        if (records.map(record => record.getDataValue('status')).indexOf('outdated') !== -1) {
+          return Promise.resolve({ desc: '有逾期书籍未还', validation: false });
+        } else if (records.length >= 2) {
+          return Promise.resolve({ desc: '超过最大借阅数两本', validation: false });
         }
-        return Promise.resolve({ book: {}, check: 'no book' });
+        return sequelize.model('book').getStock(bookID).then((stock) => {
+          if (stock <= 0) {
+            return Promise.resolve({ desc: '剩余库存0本', validation: false });
+          }
+          return Promise.resolve({ desc: `剩余库存${stock}本`, validation: true });
+        });
       });
     },
     lentBook(bookID) {
-      return sequelize.model('book').getStock(bookID).then((stock) => {
-        if (stock <= 0) {
-          throw new Error('没书了');
-        }
-        return sequelize.model('record').lentBook(this.id, bookID);
-      });
+      return sequelize.model('record').lentBook(this.id, bookID);
     },
     returnBook(bookID) {
       return sequelize.model('record').returnBook(this.id, bookID);

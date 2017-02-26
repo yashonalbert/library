@@ -46,6 +46,17 @@ const BookModel = sequelize.define('book', {
     fields: ['doubanID'],
   }],
   classMethods: {
+    getBook(bookID) {
+      return this.findOne({
+        where: {
+          $or: [{
+            id: bookID,
+          }, {
+            isbn: bookID,
+          }],
+        },
+      });
+    },
     getStock(bookID) {
       return this.findById(bookID).then((book) => {
         if (book) {
