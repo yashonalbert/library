@@ -59,7 +59,7 @@ const UserModel = sequelize.define('user', {
     },
     lentValidation(bookID) {
       return this.getLentRecord().then((records) => {
-        console.log(records.map(record => record.getDataValue('status')).indexOf('outdated'));
+        console.log(records.map(record => record.toJSON()));
         if (records.map(record => record.getDataValue('status')).indexOf('outdated') !== -1) {
           return Promise.resolve({ desc: '有逾期书籍未还', validation: false });
         } else if (records.length >= 2) {
@@ -75,9 +75,6 @@ const UserModel = sequelize.define('user', {
     },
     lentBook(bookID) {
       return sequelize.model('record').lentBook(this.id, bookID);
-    },
-    returnBook(bookID) {
-      return sequelize.model('record').returnBook(this.id, bookID);
     },
     sendNotification(template, ...args) {
       if (template === 'borrowBook') {

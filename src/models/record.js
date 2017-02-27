@@ -10,10 +10,10 @@ const RecordModel = sequelize.define('record', {
   },
 }, {
   classMethods: {
-    getRecordsByStatus(status) {
-      if (status == 'confirming') {
+    getRecordByStatus(status) {
+      if (status === 'confirming') {
         status = 'confirming';
-      } else if (status == 'lent') {
+      } else if (status === 'lent') {
         status = { in: ['lent', 'returned', 'outdated'] };
       } else {
         return Promise.resolve([]);
@@ -36,7 +36,7 @@ const RecordModel = sequelize.define('record', {
         where: {
           userID,
           status: {
-            in: ['lent', 'returned', 'outdated'],
+            in: ['lent', 'outdated'],
           },
         },
         include: [{
@@ -69,17 +69,23 @@ const RecordModel = sequelize.define('record', {
         }],
       });
     },
-    findRecord(userID, bookID) {
-      return this.findOne({
+    getRecordByISBN(isbn) {
+      return sequelize.model('book').getBook(isbn).then(book => this.findAll({
         where: {
-          userID,
-          bookID,
+          bookID: book.id,
           status: {
             in: ['lent', 'outdated'],
           },
         },
+        include: [{
+          model: sequelize.model('book'),
+          as: 'book',
+        }, {
+          model: sequelize.model('user'),
+          as: 'user',
+        }],
         order: [['lentTime', 'ASC']],
-      });
+      }));
     },
     lentBook(userID, bookID) {
       return this.create({
@@ -88,13 +94,8 @@ const RecordModel = sequelize.define('record', {
         status: 'confirming',
       });
     },
-    returnBook(userID, bookID) {
-      this.findRecord(userID, bookID).then((record) => {
-        if (!record) {
-          throw new Error('没找到借书记录');
-        }
-        return record.returnBook();
-      });
+    returnBook(recordID) {
+      return this.getRecordById(recordID).then(record => record.returnBook());
     },
   },
   instanceMethods: {
