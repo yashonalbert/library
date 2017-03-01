@@ -1,3 +1,4 @@
+import request from 'request-promise';
 import Sequelize from 'sequelize';
 import sequelize from '../utils/sequelize';
 
@@ -55,6 +56,30 @@ const BookModel = sequelize.define('book', {
             isbn: bookID,
           }],
         },
+      });
+    },
+    requestBook(isbn) {
+      request({
+        uri: `https://api.douban.com/v2/book/isbn/${isbn}`,
+        json: true,
+      }).then((parsedBody) => {
+        const book = {
+          doubanID: parsedBody.id,
+          isbn: parsedBody.isbn13,
+          title: parsedBody.title,
+          origin_title: parsedBody.origin_title,
+          subtitle: parsedBody.subtitle,
+          alt: parsedBody.alt,
+          image: parsedBody.image,
+          author: parsedBody.author.toString(),
+          translator: parsedBody.translator.toString(),
+          publisher: parsedBody.publisher,
+          pubdate: parsedBody.pubdate,
+          numRaters: parsedBody.rating.numRaters,
+          averageRating: parsedBody.rating.average,
+          summary: parsedBody.summary,
+        };
+        return book;
       });
     },
     getStock(bookID) {
