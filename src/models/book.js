@@ -1,12 +1,10 @@
+import _ from 'lodash';
 import request from 'request-promise';
 import Sequelize from 'sequelize';
 import sequelize from '../utils/sequelize';
 
 const BookModel = sequelize.define('book', {
-  doubanID: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-  },
+  doubanID: Sequelize.STRING,
   isbn: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -22,18 +20,13 @@ const BookModel = sequelize.define('book', {
     allowNull: false,
   },
   translator: Sequelize.STRING,
+  alt: Sequelize.STRING,
   image: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  numRaters: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-  },
-  averageRating: {
-    type: Sequelize.FLOAT,
-    allowNull: false,
-  },
+  numRaters: Sequelize.STRING,
+  averageRating: Sequelize.STRING,
   pubdate: Sequelize.STRING,
   publisher: Sequelize.STRING,
   summary: Sequelize.STRING,
@@ -59,7 +52,7 @@ const BookModel = sequelize.define('book', {
       });
     },
     requestBook(isbn) {
-      request({
+      return request({
         uri: `https://api.douban.com/v2/book/isbn/${isbn}`,
         json: true,
       }).then((parsedBody) => {
@@ -80,6 +73,27 @@ const BookModel = sequelize.define('book', {
           summary: parsedBody.summary,
         };
         return book;
+      });
+    },
+    setBook(book, action) {
+      return this.findOne({
+        where: {
+          isbn: book.isbn,
+        },
+      }).then((old) => {
+        if (!_.isNull(old)) {
+          if (action === 'update') {
+            return sequelize.model('record').getLentBooksCount(old.id).then((recordCount) => {
+              if (book.totalNum >= recordCount) {
+                return old.update(book);
+              }
+              throw new Error('stock over limit');
+            });
+          }
+          book.totalNum += old.totalNum;
+          return old.update(book);
+        }
+        return this.create(book);
       });
     },
     getStock(bookID) {

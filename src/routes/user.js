@@ -9,6 +9,18 @@ import config from '../utils/config';
 
 const router = Router({ prefix: '/user' });
 
+router.post('/message', async (ctx) => {
+  const to = { touser: ctx.request.body.corpUserID };
+  const message = {
+    msgtype: 'text',
+    text: {
+      content: ctx.request.body.content,
+    },
+    safe: '0',
+  };
+  ctx.body = await Promise.promisify(wechat.send, { context: wechat })(to, message);
+});
+
 router.get('/jssign', async (ctx) => {
   const param = {
     debug: ctx.query.debug,

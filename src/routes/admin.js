@@ -20,7 +20,7 @@ router.get('/records', requireAdmin, async (ctx) => {
   }
 });
 
-router.post('/records/', requireAdmin, async (ctx) => {
+router.post('/records', requireAdmin, async (ctx) => {
   ctx.body = await RecordModel.returnBook(Number(ctx.request.body.recordID));
 });
 

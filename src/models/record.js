@@ -16,7 +16,7 @@ const RecordModel = sequelize.define('record', {
       } else if (status === 'lent') {
         status = { in: ['lent', 'returned', 'outdated'] };
       } else {
-        return Promise.resolve([]);
+        throw new Error('status is not match');
       }
       return this.findAll({
         where: {
@@ -48,10 +48,10 @@ const RecordModel = sequelize.define('record', {
         }],
       });
     },
-    getLentBooksCount(userID) {
+    getLentBooksCount(bookID) {
       return this.count({
         where: {
-          userID,
+          bookID,
           status: {
             in: ['lent', 'outdated'],
           },
