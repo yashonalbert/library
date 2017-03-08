@@ -34,12 +34,28 @@ const BookModel = sequelize.define('book', {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
+  status: {
+    type: Sequelize.STRING,
+    defaultValue: 'existence',
+  },
 }, {
   indexes: [{
     unique: true,
     fields: ['doubanID'],
   }],
   classMethods: {
+    getBookByStatus(status) {
+      if (status === 'existence') {
+        status = 'existence';
+      } else {
+        status = 'inexistence';
+      }
+      return this.findAll({
+        where: {
+          status,
+        },
+      });
+    },
     getBook(bookID) {
       return this.findOne({
         where: {
@@ -116,6 +132,12 @@ const BookModel = sequelize.define('book', {
     getStock() {
       // TODO 直接查 record 可以减少一次查询
       return this.constructor.getStock(this.id);
+    },
+    changeStatus(action) {
+      if (action === 'delete') {
+        return this.update({ status: 'inexistence' });
+      }
+      return this.update({ status: 'existence' });
     },
   },
 });

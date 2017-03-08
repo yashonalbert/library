@@ -13,10 +13,8 @@ const RecordModel = sequelize.define('record', {
     getRecordByStatus(status) {
       if (status === 'confirming') {
         status = 'confirming';
-      } else if (status === 'lent') {
-        status = { in: ['lent', 'returned', 'outdated'] };
       } else {
-        throw new Error('status is not match');
+        status = { in: ['lent', 'returned', 'outdated'] };
       }
       return this.findAll({
         where: {

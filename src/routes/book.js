@@ -4,8 +4,13 @@ import { BookModel } from '../models';
 
 const router = Router({ prefix: '/books' });
 
+router.param('bookID', async (bookID, ctx, next) => {
+  ctx.book = await BookModel.getBook(bookID);
+  await next();
+});
+
 router.get('/bookList', async (ctx) => {
-  ctx.body = await BookModel.findAll();
+  ctx.body = await BookModel.getBookByStatus(ctx.query.status);
 });
 
 router.get('/requestBook', async (ctx) => {
@@ -23,7 +28,10 @@ router.get('/lentValidation/:bookID', async (ctx) => {
 });
 
 router.get('/:bookID', async (ctx) => {
-  ctx.body = await BookModel.getBook(ctx.params.bookID);
+  ctx.body = ctx.book;
 });
 
+router.post('/:bookID', async (ctx) => {
+  ctx.body = await ctx.book.changeStatus(ctx.request.body.action);
+});
 export default router;
