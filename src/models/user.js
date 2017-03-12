@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import Sequelize from 'sequelize';
 import sequelize from '../utils/sequelize';
 
@@ -71,15 +70,6 @@ const UserModel = sequelize.define('user', {
           return Promise.resolve({ desc: `剩余库存${stock}本`, validation: true });
         });
       });
-    },
-    lentBook(bookID) {
-      return sequelize.model('record').lentBook(this.id, bookID);
-    },
-    sendNotification(template, ...args) {
-      if (template === 'borrowBook') {
-        const bookID = _.first(args);
-        // TODO: 发往微信
-      }
     },
   },
 });

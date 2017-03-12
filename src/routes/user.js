@@ -9,16 +9,8 @@ import config from '../utils/config';
 
 const router = Router({ prefix: '/user' });
 
-router.post('/message', async (ctx) => {
-  const to = { touser: ctx.request.body.corpUserID };
-  const message = {
-    msgtype: 'text',
-    text: {
-      content: ctx.request.body.content,
-    },
-    safe: '0',
-  };
-  ctx.body = await Promise.promisify(wechat.send, { context: wechat })(to, message);
+router.get('/role', (ctx) => {
+  ctx.body = { role: ctx.user.role };
 });
 
 router.get('/jssign', async (ctx) => {
@@ -54,7 +46,7 @@ router.get('/login', async (ctx) => {
 });
 
 router.post('/records', async (ctx) => {
-  ctx.body = await ctx.user.lentBook(Number(ctx.request.body.bookID));
+  ctx.body = await RecordModel.lentBook(ctx.user.id, Number(ctx.request.body.bookID));
 });
 
 router.get('/records', async (ctx) => {

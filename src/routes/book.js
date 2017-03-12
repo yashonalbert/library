@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import Router from 'koa-router';
+import { requireAdmin } from '../middleware';
 import { BookModel } from '../models';
 
 const router = Router({ prefix: '/books' });
@@ -9,7 +10,7 @@ router.param('bookID', async (bookID, ctx, next) => {
   await next();
 });
 
-router.get('/bookList', async (ctx) => {
+router.get('/bookList', requireAdmin, async (ctx) => {
   ctx.body = await BookModel.getBookByStatus(ctx.query.status);
 });
 
@@ -17,7 +18,7 @@ router.get('/requestBook', async (ctx) => {
   ctx.body = await BookModel.requestBook(ctx.query.isbn);
 });
 
-router.post('/setBook', async (ctx) => {
+router.post('/setBook', requireAdmin, async (ctx) => {
   const book = _.omit(ctx.request.body, ['action']);
   book.totalNum = Number(book.totalNum);
   ctx.body = await BookModel.setBook(book, ctx.request.body.action);
@@ -31,7 +32,7 @@ router.get('/:bookID', async (ctx) => {
   ctx.body = ctx.book;
 });
 
-router.post('/:bookID', async (ctx) => {
+router.post('/:bookID', requireAdmin, async (ctx) => {
   ctx.body = await ctx.book.changeStatus(ctx.request.body.action);
 });
 export default router;
