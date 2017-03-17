@@ -1,7 +1,9 @@
 import 'babel-polyfill';
 
+import fs from 'fs';
 import Koa from 'koa';
 import cors from 'kcors';
+import send from 'koa-send';
 import bodyParser from 'koa-bodyparser';
 import Logger from './utils/logger';
 import { userRoute, bookRoute, adminRoute } from './routes';
@@ -19,6 +21,7 @@ server.use(async (ctx, next) => {
   const ms = new Date() - start;
   logger.info(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
+
 server.use(cors());
 server.use(bodyParser());
 server.use(authentication);
@@ -28,5 +31,12 @@ sequelize.sync();
 server.use(userRoute.routes());
 server.use(bookRoute.routes());
 server.use(adminRoute.routes());
+
+server.use(async (ctx) => {
+  if (ctx.path !== '/' && fs.existsSync(`${__dirname}/public/${ctx.path}`)) {
+    return await send(ctx, `/lib/public${ctx.path}`);
+  }
+  return await send(ctx, '/lib/public/index.html');
+});
 
 export default server;

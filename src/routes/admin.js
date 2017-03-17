@@ -3,7 +3,7 @@ import Router from 'koa-router';
 import { requireAdmin } from '../middleware';
 import { RecordModel } from '../models';
 
-const router = Router({ prefix: '/users' });
+const router = Router({ prefix: '/api/users' });
 
 router.param('recordID', async (recordID, ctx, next) => {
   ctx.record = await RecordModel.getRecordById(recordID);

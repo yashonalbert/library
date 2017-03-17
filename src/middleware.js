@@ -3,7 +3,7 @@ import { UserModel } from './models';
 const authentication = async (ctx, next) => {
   const userID = ctx.cookies.get('userID', { signed: true });
   ctx.user = await UserModel.findById(userID);
-  if (!ctx.user && !['/user/oauth2', '/user/login'].includes(ctx.path)) {
+  if (!ctx.user && !['/api/user/oauth2', '/api/user/login'].includes(ctx.path)) {
     ctx.redirect('/api/user/oauth2');
   } else {
     await next();

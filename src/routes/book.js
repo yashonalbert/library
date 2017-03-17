@@ -3,7 +3,7 @@ import Router from 'koa-router';
 import { requireAdmin } from '../middleware';
 import { BookModel } from '../models';
 
-const router = Router({ prefix: '/books' });
+const router = Router({ prefix: '/api/books' });
 
 router.param('bookID', async (bookID, ctx, next) => {
   ctx.book = await BookModel.getBook(bookID);

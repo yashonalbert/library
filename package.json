@@ -25,6 +25,7 @@
     "koa": "next",
     "koa-bodyparser": "3",
     "koa-router": "next",
+    "koa-send": "^3.3.0",
     "lodash": "^4.17.4",
     "log4js": "^1.1.0",
     "nock": "^9.0.2",

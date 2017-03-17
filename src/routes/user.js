@@ -7,7 +7,7 @@ import wechat from '../utils/wechat';
 import { RecordModel, UserModel } from '../models';
 import config from '../utils/config';
 
-const router = Router({ prefix: '/user' });
+const router = Router({ prefix: '/api/user' });
 
 router.get('/role', (ctx) => {
   ctx.body = { role: ctx.user.role };
