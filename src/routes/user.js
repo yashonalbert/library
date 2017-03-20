@@ -9,6 +9,15 @@ import config from '../utils/config';
 
 const router = Router({ prefix: '/api/user' });
 
+function toJson(code, msg, ctx) {
+  const json = {
+    code,
+    msg,
+    request: `${ctx.method} ${ctx.url}`,
+  };
+  return json;
+}
+
 router.get('/role', (ctx) => {
   ctx.body = { role: ctx.user.role };
 });
@@ -46,19 +55,32 @@ router.get('/login', async (ctx) => {
 });
 
 router.post('/records', async (ctx) => {
-  ctx.body = await RecordModel.lentBook(ctx.user.id, Number(ctx.request.body.bookID));
+  try {
+    await RecordModel.lentBook(ctx.user.id, Number(ctx.request.body.bookID));
+    ctx.body = toJson(200, 'submit success', ctx);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 router.get('/records', async (ctx) => {
-  ctx.body = await ctx.user.getLentRecord();
+  try {
+    ctx.body = await ctx.user.getLentRecord();
+  } catch (error) {
+    console.log();
+  }
 });
 
 router.get('/records/:recordID', async (ctx) => {
-  const record = await RecordModel.getRecordById(ctx.params.recordID);
-  if (record.userID === ctx.user.id) {
-    ctx.body = record;
-  } else {
-    ctx.body = {};
+  try {
+    const record = await RecordModel.getRecordById(ctx.params.recordID);
+    if (record.userID === ctx.user.id) {
+      ctx.body = record;
+    } else {
+      ctx.body = toJson(401, 'permission denied', ctx);
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 

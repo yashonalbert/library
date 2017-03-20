@@ -47,8 +47,10 @@ const BookModel = sequelize.define('book', {
     getBookByStatus(status) {
       if (status === 'existence') {
         status = 'existence';
-      } else {
+      } else if (status === 'inexistence') {
         status = 'inexistence';
+      } else {
+        return Promise.resolve('invalid status');
       }
       return this.findAll({
         where: {
@@ -97,34 +99,36 @@ const BookModel = sequelize.define('book', {
           isbn: book.isbn,
         },
       }).then((old) => {
-        if (!_.isNull(old)) {
+        if (!_.isNull(old) && ['update', 'auto', 'manual'].includes(action)) {
           if (action === 'update') {
             return sequelize.model('record').getLentBooksCount(old.id).then((recordCount) => {
               if (book.totalNum >= recordCount) {
                 return old.update(book);
               }
-              throw new Error('stock over limit');
+              return Promise.resolve('stock over limit');
             });
           }
           book.totalNum += old.totalNum;
           return old.update(book);
+        } else if (action === 'create') {
+          return this.create(book);
         }
-        return this.create(book);
+        return Promise.resolve('invalid action');
       });
     },
     getStock(bookID) {
       return this.findById(bookID).then((book) => {
-        if (book) {
-          return sequelize.model('record').count({
-            where: {
-              bookID,
-              status: {
-                in: ['lent', 'outdated'],
-              },
-            },
-          }).then(recordCount => book.totalNum - recordCount);
+        if (_.isNull(book)) {
+          return 0;
         }
-        return 0;
+        return sequelize.model('record').count({
+          where: {
+            bookID,
+            status: {
+              in: ['lent', 'outdated'],
+            },
+          },
+        }).then(recordCount => book.totalNum - recordCount);
       });
     },
   },
@@ -135,9 +139,16 @@ const BookModel = sequelize.define('book', {
     },
     changeStatus(action) {
       if (action === 'delete') {
-        return this.update({ status: 'inexistence' });
+        return sequelize.model('record').getLentBooksCount(this.id).then((lentCount) => {
+          if (lentCount > 0) {
+            return Promise.resolve('lentCount > 0');
+          }
+          return this.update({ status: 'inexistence' });
+        });
+      } else if (action === 'recovery') {
+        return this.update({ status: 'existence' });
       }
-      return this.update({ status: 'existence' });
+      return Promise.resolve('invalid action');
     },
   },
 });

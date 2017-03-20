@@ -59,16 +59,28 @@ const UserModel = sequelize.define('user', {
     lentValidation(bookID) {
       return this.getLentRecord().then((records) => {
         if (records.map(record => record.getDataValue('status')).indexOf('outdated') !== -1) {
-          return Promise.resolve({ desc: '有逾期书籍未还', validation: false });
+          return {
+            desc: '有逾期书籍未还',
+            validation: false,
+          };
         } else if (records.length >= 2) {
-          return Promise.resolve({ desc: '超过最大借阅数两本', validation: false });
+          return {
+            desc: '超过最大借阅数两本',
+            validation: false,
+          };
         }
-        return sequelize.model('book').getStock(bookID).then((stock) => {
-          if (stock <= 0) {
-            return Promise.resolve({ desc: '剩余库存0本', validation: false });
-          }
-          return Promise.resolve({ desc: `剩余库存${stock}本`, validation: true });
-        });
+        return sequelize.model('book').getStock(bookID);
+      }).then((stock) => {
+        if (stock <= 0) {
+          return {
+            desc: '剩余库存0本',
+            validation: false,
+          };
+        }
+        return {
+          desc: `剩余库存${stock}本`,
+          validation: true,
+        };
       });
     },
   },

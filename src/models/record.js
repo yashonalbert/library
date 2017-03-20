@@ -17,8 +17,10 @@ const RecordModel = sequelize.define('record', {
     getRecordByStatus(status) {
       if (status === 'confirming') {
         status = 'confirming';
-      } else {
+      } else if (status === 'lent') {
         status = { in: ['lent', 'returned', 'outdated'] };
+      } else {
+        return Promise.resolve('invalid status');
       }
       return this.findAll({
         where: {
@@ -72,22 +74,49 @@ const RecordModel = sequelize.define('record', {
       });
     },
     getRecordByISBN(isbn) {
-      return sequelize.model('book').getBook(isbn).then(book => this.findAll({
-        where: {
-          bookID: book.id,
-          status: {
-            in: ['lent', 'outdated'],
+      return sequelize.model('book').getBook(isbn).then((book) => {
+        if (_.isNull(book)) {
+          return Promise.resolve('book not found');
+        }
+        return this.findAll({
+          where: {
+            bookID: book.id,
+            status: {
+              in: ['lent', 'outdated'],
+            },
           },
-        },
-        include: [{
-          model: sequelize.model('book'),
-          as: 'book',
-        }, {
-          model: sequelize.model('user'),
-          as: 'user',
-        }],
-        order: [['lentTime', 'ASC']],
-      }));
+          include: [{
+            model: sequelize.model('book'),
+            as: 'book',
+          }, {
+            model: sequelize.model('user'),
+            as: 'user',
+          }],
+          order: [['lentTime', 'ASC']],
+        });
+      });
+    },
+    validRecord(userID, bookID) {
+      let validBook;
+      let validUser;
+      return sequelize.model('book').findById(bookID).then((book) => {
+        if (_.isNull(book)) {
+          validBook = false;
+        } else {
+          validBook = true;
+        }
+        return sequelize.model('user').findById(userID);
+      }).then((user) => {
+        if (_.isNull(user)) {
+          validUser = false;
+        } else {
+          validUser = true;
+        }
+        if (validBook === true && validUser === true) {
+          return 'valid';
+        }
+        return 'invalid';
+      });
     },
     lentBook(userID, bookID) {
       const recordDoc = {
@@ -97,7 +126,12 @@ const RecordModel = sequelize.define('record', {
       };
       return this.findOne({ where: recordDoc }).then((old) => {
         if (_.isNull(old)) {
-          return this.create(recordDoc);
+          return this.validRecord(userID, bookID).then((valid) => {
+            if (valid === 'valid') {
+              return this.create(recordDoc);
+            }
+            return Promise.resolve('invalid book or user');
+          });
         }
         return old.update({ updatedAt: new Date() });
       }).then(record => this.findOne({
@@ -114,7 +148,12 @@ const RecordModel = sequelize.define('record', {
       })).then(record => record.sendNotification('lendBook', record));
     },
     returnBook(recordID) {
-      return this.getRecordById(recordID).then(record => record.returnBook());
+      return this.getRecordById(recordID).then((record) => {
+        if (_.isNull(record)) {
+          return Promise.resolve('record not found');
+        }
+        return record.returnBook();
+      });
     },
   },
   instanceMethods: {
@@ -126,7 +165,7 @@ const RecordModel = sequelize.define('record', {
           returnTime: new Date(),
         });
       }
-      return Promise.resolve(0);
+      return Promise.resolve('invalid returnBook');
     },
     sendNotification(template, records) {
       const to = { touser: '' };
@@ -139,8 +178,11 @@ const RecordModel = sequelize.define('record', {
       };
       if (template === 'lendBook') {
         to.touser = records.user.corpUserID;
-        message.text.content = `用户 ${records.user.name} 申请借阅 ${records.book.title}\n
-          <a href="http://${config.domain}/records/all">点击进入授权页</a>`;
+        message.text.content = `
+          用户 ${records.user.name}
+          申请借阅 ${records.book.title}
+          <a href="http://${config.domain}/#/records/all">点击进入授权页</a>
+        `;
       }
       return Promise.promisify(wechat.send, { context: wechat })(to, message);
     },
@@ -158,7 +200,7 @@ const RecordModel = sequelize.define('record', {
         }
         return actionPromise;
       }
-      return Promise.resolve(0);
+      return Promise.resolve('invalid confirm');
     },
   },
 });
