@@ -110,7 +110,7 @@ const BookModel = sequelize.define('book', {
           }
           book.totalNum += old.totalNum;
           return old.update(book);
-        } else if (action === 'create') {
+        } else if (['auto', 'manual'].includes(action)) {
           return this.create(book);
         }
         return Promise.resolve('invalid action');
