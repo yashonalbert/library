@@ -44,7 +44,8 @@ const BookModel = sequelize.define('book', {
     fields: ['doubanID'],
   }],
   classMethods: {
-    getBookByStatus(status) {
+    getBookByStatus(keyWord, status, page) {
+      let where;
       if (status === 'existence') {
         status = 'existence';
       } else if (status === 'inexistence') {
@@ -52,10 +53,33 @@ const BookModel = sequelize.define('book', {
       } else {
         return Promise.resolve('invalid status');
       }
-      return this.findAll({
-        where: {
+      if (_.isEmpty(keyWord)) {
+        where = { status };
+      } else {
+        where = {
           status,
-        },
+          $or: [{
+            isbn: { $like: `%${keyWord}%` },
+          }, {
+            title: { $like: `%${keyWord}%` },
+          }, {
+            subtitle: { $like: `%${keyWord}%` },
+          }, {
+            origin_title: { $like: `%${keyWord}%` },
+          }, {
+            author: { $like: `%${keyWord}%` },
+          }, {
+            translator: { $like: `%${keyWord}%` },
+          }, {
+            publisher: { $like: `%${keyWord}%` },
+          }],
+        };
+      }
+      return this.findAll({
+        where,
+        offset: (page - 1) * 10,
+        limit: 10,
+        order: [['title', 'ASC']],
       });
     },
     getBook(bookID) {

@@ -14,7 +14,7 @@ const RecordModel = sequelize.define('record', {
   },
 }, {
   classMethods: {
-    getRecordByStatus(status) {
+    searchRecords(keyWord, status, page) {
       if (status === 'confirming') {
         status = 'confirming';
       } else if (status === 'lent') {
@@ -23,9 +23,32 @@ const RecordModel = sequelize.define('record', {
         return Promise.resolve('invalid status');
       }
       return this.findAll({
-        where: {
-          status,
-        },
+        offset: (page - 1) * 10,
+        limit: 10,
+        order: [['lentTime', 'DESC']],
+        include: [{
+          model: sequelize.model('book'),
+          as: 'book',
+        }, {
+          model: sequelize.model('user'),
+          as: 'user',
+          where: { name: keyWord },
+        }],
+      });
+    },
+    getRecordByStatus(status, page) {
+      if (status === 'confirming') {
+        status = 'confirming';
+      } else if (status === 'lent') {
+        status = { in: ['lent', 'returned', 'outdated'] };
+      } else {
+        return Promise.resolve('invalid status');
+      }
+      return this.findAll({
+        where: { status },
+        offset: (page - 1) * 10,
+        limit: 10,
+        order: [['lentTime', 'DESC']],
         include: [{
           model: sequelize.model('book'),
           as: 'book',

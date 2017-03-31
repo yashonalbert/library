@@ -28,9 +28,24 @@ router.param('bookID', async (bookID, ctx, next) => {
   }
 });
 
+router.get('/search', async (ctx) => {
+  try {
+    const { keyWord, status, page } = ctx.query;
+    const result = await BookModel.getBookByStatus(keyWord, status, page);
+    if (result === 'invalid status') {
+      ctx.body = toJson(400, 'invalid status', ctx);
+    } else {
+      ctx.body = result;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.get('/bookList', requireAdmin, async (ctx) => {
   try {
-    const result = await BookModel.getBookByStatus(ctx.query.status);
+    const { status, page } = ctx.query;
+    const result = await BookModel.getBookByStatus('', status, page);
     if (result === 'invalid status') {
       ctx.body = toJson(400, 'invalid status', ctx);
     } else {

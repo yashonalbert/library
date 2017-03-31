@@ -28,10 +28,25 @@ router.param('recordID', async (recordID, ctx, next) => {
   }
 });
 
+router.get('/search', async (ctx) => {
+  try {
+    const { keyWord, status, page } = ctx.query;
+    const result = await RecordModel.searchRecords(keyWord, status, page);
+    if (result === 'invalid status') {
+      ctx.body = toJson(400, 'invalid status', ctx);
+    } else {
+      ctx.body = result;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.get('/records', requireAdmin, async (ctx) => {
   try {
     if (_.keys(ctx.query).includes('status')) {
-      const result = await RecordModel.getRecordByStatus(ctx.query.status);
+      const { status, page } = ctx.query;
+      const result = await RecordModel.getRecordByStatus(status, page);
       if (result === 'invalid status') {
         ctx.body = toJson(400, 'invalid status', ctx);
       } else {

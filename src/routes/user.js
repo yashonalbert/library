@@ -73,9 +73,11 @@ router.get('/records', async (ctx) => {
 
 router.get('/records/:recordID', async (ctx) => {
   try {
-    const record = await RecordModel.getRecordById(ctx.params.recordID);
-    if (record.userID === ctx.user.id) {
-      ctx.body = record;
+    const result = await RecordModel.getRecordById(ctx.params.recordID);
+    if (_.isNull(result)) {
+      ctx.body = toJson(203, 'record not found', ctx);
+    } else if (result.userID === ctx.user.id) {
+      ctx.body = result;
     } else {
       ctx.body = toJson(401, 'permission denied', ctx);
     }
