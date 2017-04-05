@@ -18,8 +18,11 @@ function toJson(code, msg, ctx) {
   return json;
 }
 
-router.get('/role', (ctx) => {
-  ctx.body = { role: ctx.user.role };
+router.get('/userInfo', (ctx) => {
+  ctx.body = {
+    message: ctx.user.message,
+    role: ctx.user.role,
+  };
 });
 
 router.get('/jssign', async (ctx) => {

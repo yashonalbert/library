@@ -42,6 +42,19 @@ router.get('/search', async (ctx) => {
   }
 });
 
+router.post('/messageSet', requireAdmin, async (ctx) => {
+  try {
+    const result = await ctx.user.messageSet(ctx.request.body.status);
+    if (result === 'invalid status') {
+      ctx.body = toJson(400, 'invalid status', ctx);
+    } else {
+      ctx.body = toJson(200, 'return success', ctx);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.get('/records', requireAdmin, async (ctx) => {
   try {
     if (_.keys(ctx.query).includes('status')) {

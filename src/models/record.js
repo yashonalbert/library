@@ -168,7 +168,7 @@ const RecordModel = sequelize.define('record', {
           model: sequelize.model('user'),
           as: 'user',
         }],
-      })).then(record => record.sendNotification('lendBook', record));
+      })).then(record => this.sendNotification('lendBook', record));
     },
     returnBook(recordID) {
       return this.getRecordById(recordID).then((record) => {
@@ -176,6 +176,44 @@ const RecordModel = sequelize.define('record', {
           return Promise.resolve('record not found');
         }
         return record.returnBook();
+      });
+    },
+    sendNotification(template, data) {
+      const to = { touser: '' };
+      const message = { safe: '0' };
+      return sequelize.model('user').findAll({
+        where: {
+          message: 'on',
+          role: 'admin',
+        },
+      }).then((users) => {
+        users = users.map((user) => {
+          user = user.toJSON();
+          return user.corpUserID;
+        });
+        users = users.join('|');
+        if (template === 'lendBook') {
+          to.touser = users;
+          message.msgtype = 'text';
+          const content =
+            `${data.user.name}申请借阅《${data.book.title}》<a href="http://${config.domain}/#/records/all">点击进入授权页</a>`;
+          message.text = { content };
+        }
+        if (template === 'recommend') {
+          to.touser = users;
+          message.msgtype = 'news';
+          const info = _.compact(_.values(_.pick(data, [
+            'subtitle', 'origin_title', 'author', 'translator', 'publisher', 'pubdate', 'isbn',
+          ]))).join(' / ');
+          const articles = [{
+            title: `【图书推荐】${data.title}`,
+            description: info,
+            url: data.alt,
+            picurl: data.image,
+          }];
+          message.news = { articles };
+        }
+        return Promise.promisify(wechat.send, { context: wechat })(to, message);
       });
     },
   },
@@ -189,25 +227,6 @@ const RecordModel = sequelize.define('record', {
         });
       }
       return Promise.resolve('invalid returnBook');
-    },
-    sendNotification(template, records) {
-      const to = { touser: '' };
-      const message = {
-        msgtype: 'text',
-        text: {
-          content: '',
-        },
-        safe: '0',
-      };
-      if (template === 'lendBook') {
-        to.touser = records.user.corpUserID;
-        message.text.content = `
-          用户 ${records.user.name}
-          申请借阅 ${records.book.title}
-          <a href="http://${config.domain}/#/records/all">点击进入授权页</a>
-        `;
-      }
-      return Promise.promisify(wechat.send, { context: wechat })(to, message);
     },
     confirm(action) {
       // TODO 非原子判断

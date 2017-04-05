@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Router from 'koa-router';
 import { requireAdmin } from '../middleware';
-import { BookModel } from '../models';
+import { BookModel, RecordModel } from '../models';
 
 const router = Router({ prefix: '/api/books' });
 
@@ -23,6 +23,15 @@ router.param('bookID', async (bookID, ctx, next) => {
       ctx.book = result;
       await next();
     }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.post('/recommend', async (ctx) => {
+  try {
+    await RecordModel.sendNotification('recommend', ctx.request.body);
+    ctx.body = toJson(200, 'recommend success', ctx);
   } catch (error) {
     console.log(error);
   }
@@ -60,9 +69,9 @@ router.get('/requestBook', async (ctx) => {
   try {
     ctx.body = await BookModel.requestBook(ctx.query.isbn);
   } catch (error) {
-    if (_.isUndefined(error.error.msg) && error.error.msg === 'book_not_found') {
+    if (!_.isUndefined(error.error.msg) && error.error.msg === 'book_not_found') {
       ctx.body = toJson(203, 'book not found', ctx);
-    } else if (_.isUndefined(error.error.msg) && error.error.msg === 'invalid_request_uri') {
+    } else if (!_.isUndefined(error.error.msg) && error.error.msg === 'invalid_request_uri') {
       ctx.body = toJson(400, 'invalid request uri', ctx);
     } else {
       console.log(error);

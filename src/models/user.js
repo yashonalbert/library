@@ -14,33 +14,20 @@ const UserModel = sequelize.define('user', {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  position: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  mobile: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  gender: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  email: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  weixinID: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
-  avatar: {
-    type: Sequelize.STRING,
-    allowNull: true,
-  },
+  position: Sequelize.STRING,
+  mobile: Sequelize.STRING,
+  gender: Sequelize.STRING,
+  email: Sequelize.STRING,
+  weixinID: Sequelize.STRING,
+  avatar: Sequelize.STRING,
   status: {
     type: Sequelize.INTEGER,
     allowNull: false,
+  },
+  message: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    defaultValue: 'on',
   },
   role: {
     type: Sequelize.STRING,
@@ -53,6 +40,14 @@ const UserModel = sequelize.define('user', {
     fields: ['corpUserID'],
   }],
   instanceMethods: {
+    messageSet(status) {
+      if (status === 'on') {
+        return this.update({ message: 'on' });
+      } else if (status === 'off') {
+        return this.update({ message: 'off' });
+      }
+      return Promise.resolve('invalid status');
+    },
     getLentRecord() {
       return sequelize.model('record').getLentRecord(this.id);
     },

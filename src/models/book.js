@@ -29,6 +29,7 @@ const BookModel = sequelize.define('book', {
   averageRating: Sequelize.STRING,
   pubdate: Sequelize.STRING,
   publisher: Sequelize.STRING,
+  price: Sequelize.STRING,
   summary: Sequelize.STRING,
   totalNum: {
     type: Sequelize.INTEGER,
@@ -112,6 +113,7 @@ const BookModel = sequelize.define('book', {
           pubdate: parsedBody.pubdate,
           numRaters: parsedBody.rating.numRaters,
           averageRating: parsedBody.rating.average,
+          price: parsedBody.price,
           summary: parsedBody.summary,
         };
         return book;
