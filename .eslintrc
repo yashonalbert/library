@@ -8,6 +8,48 @@
   "rules": {
     "no-param-reassign": "off",
     "no-underscore-dangle": "off",
-    "max-len": ["error", 120]
-	}
+    "max-len": ["error", 120],
+
+    /* JSX */
+    "react/prop-types": [1, {
+      "ignore": ["className", "children", "params"]
+    }],
+    "react/sort-comp": [ // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/sort-comp.md
+      2,
+      {
+        "order": [
+          "lifecycle",
+          "/^on.+$/",
+          "/^(get|set)(?!(InitialState$|DefaultProps$|ChildContext$)).+$/",
+          "everything-else",
+          "/^render.+$/",
+          "render"
+        ],
+        "groups": {
+          "lifecycle": [
+            "displayName",
+            "mixins",
+            "propTypes",
+            "contextTypes",
+            "childContextTypes",
+            "statics",
+            "defaultProps",
+            "constructor",
+            "getDefaultProps",
+            "getInitialState",
+            "state",
+            "getChildContext",
+            "componentWillMount",
+            "componentDidMount",
+            "componentWillReceiveProps",
+            "shouldComponentUpdate",
+            "componentWillUpdate",
+            "componentDidUpdate",
+            "componentWillUnmount"
+          ]
+        }
+      }
+    ],
+    "jsx-a11y/img-has-alt": [1, "Image"]
+  }
 }
