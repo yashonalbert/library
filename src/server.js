@@ -33,10 +33,10 @@ server.use(bookRoute.routes());
 server.use(adminRoute.routes());
 
 server.use(async (ctx) => {
-  if (ctx.path !== '/' && fs.existsSync(`${__dirname}/public/${ctx.path}`)) {
-    return await send(ctx, `/lib/public${ctx.path}`);
+  if (ctx.path !== '/' && fs.existsSync(`${__dirname}/public/web${ctx.path}`)) {
+    return await send(ctx, `/lib/public/web${ctx.path}`);
   }
-  return await send(ctx, '/lib/public/index.html');
+  return await send(ctx, '/lib/public/web/index.html');
 });
 
 export default server;
