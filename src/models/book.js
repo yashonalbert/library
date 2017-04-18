@@ -83,6 +83,39 @@ const BookModel = sequelize.define('book', {
         order: [['title', 'ASC']],
       });
     },
+    getBookCount(keyWord, status) {
+      let where;
+      if (status === 'existence') {
+        status = 'existence';
+      } else if (status === 'inexistence') {
+        status = 'inexistence';
+      } else {
+        return Promise.resolve('invalid status');
+      }
+      if (_.isEmpty(keyWord)) {
+        where = { status };
+      } else {
+        where = {
+          status,
+          $or: [{
+            isbn: { $like: `%${keyWord}%` },
+          }, {
+            title: { $like: `%${keyWord}%` },
+          }, {
+            subtitle: { $like: `%${keyWord}%` },
+          }, {
+            origin_title: { $like: `%${keyWord}%` },
+          }, {
+            author: { $like: `%${keyWord}%` },
+          }, {
+            translator: { $like: `%${keyWord}%` },
+          }, {
+            publisher: { $like: `%${keyWord}%` },
+          }],
+        };
+      }
+      return this.count({ where });
+    },
     getBook(bookID) {
       return this.findOne({
         where: {

@@ -13,7 +13,7 @@
     "build-frontend": "npm run clean && cross-env NODE_ENV=production webpack --webpack.config.babel.js --progress",
     "build-backend": "babel src -d lib",
     "analyzer": "npm run clean && cross-env NODE_ENV=production webpack --webpack.config.babel.js --json | webpack-bundle-size-analyzer",
-    "pack": "npm run build && rm -rf ../szlibrary/lib/public && cp -r ./dist ../szlibrary/lib/public"
+    "pack": "npm run build-frontend && rm -rf ../szlibrary/lib/public && cp -r ./dist ../szlibrary/lib/public"
   },
   "repository": {
     "type": "git",

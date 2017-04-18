@@ -35,6 +35,7 @@ export default class BookList extends React.Component {
     return this.getBooks(status, 1).then((books) => {
       return this.setState({
         ...amStyle,
+        isSearch: false,
         page: 1,
         status,
         books

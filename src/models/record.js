@@ -58,6 +58,25 @@ const RecordModel = sequelize.define('record', {
         }],
       });
     },
+    getRecordCount(keyWord, status) {
+      if (status === 'confirming') {
+        status = 'confirming';
+      } else if (status === 'lent') {
+        status = { in: ['lent', 'returned', 'outdated'] };
+      } else {
+        return Promise.resolve('invalid status');
+      }
+      if (_.isEmpty(keyWord)) {
+        return this.count({ where: { status } });
+      }
+      return this.count({
+        include: [{
+          model: sequelize.model('user'),
+          as: 'user',
+          where: { name: keyWord },
+        }],
+      });
+    },
     getLentRecord(userID) {
       return this.findAll({
         where: {

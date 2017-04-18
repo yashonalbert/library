@@ -147,7 +147,7 @@ export default class Home extends React.Component {
           amStyle="primary"
           title="松滋公司职工书屋"
         />
-        <Container>
+        <Container scrollable>
           <List className="margin-v-0">
             {this.adminHeader()}
             {this.sendSwitch()}

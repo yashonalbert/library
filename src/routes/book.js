@@ -37,6 +37,23 @@ router.post('/recommend', async (ctx) => {
   }
 });
 
+router.get('/count', async (ctx) => {
+  try {
+    if (_.isUndefined(ctx.query.keyWord)) {
+      ctx.query.keyWord = '';
+    }
+    const { keyWord, status } = ctx.query;
+    const result = await BookModel.getBookCount(keyWord, status);
+    if (result === 'invalid status') {
+      ctx.body = toJson(400, 'invalid status', ctx);
+    } else {
+      ctx.body = { count: result };
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 router.get('/search', async (ctx) => {
   try {
     const { keyWord, status, page } = ctx.query;
