@@ -46,14 +46,18 @@ const UserModel = sequelize.define('user', {
       } else if (status === 'off') {
         return this.update({ message: 'off' });
       }
-      return Promise.resolve('invalid status');
+      return Promise.reject({
+        message: 'invalid status',
+        statusCode: 400,
+        status: 400,
+      });
     },
     getLentRecord() {
       return sequelize.model('record').getLentRecord(this.id);
     },
     lentValidation(bookID) {
       return this.getLentRecord().then((records) => {
-        if (records.map(record => record.getDataValue('status')).indexOf('outdated') !== -1) {
+        if (records.map((record) => record.status).includes('outdated')) {
           return {
             desc: '有逾期书籍未还',
             validation: false,

@@ -1,9 +1,20 @@
+import _ from 'lodash';
 import { UserModel } from './models';
 
 const authentication = async (ctx, next) => {
+  const ignorePath = [
+    '/api/user/oauth2',
+    '/api/user/login',
+    '/css/amazeui.min.css',
+    '/css/app.min.css',
+    '/js/app.min.js',
+    '/i/favicon.png',
+    '/fonts/fontawesome-webfont.woff2',
+    '/web.html'
+  ];
   const userID = ctx.cookies.get('userID', { signed: true });
   ctx.user = await UserModel.findById(userID);
-  if (!ctx.user && !['/api/user/oauth2', '/api/user/login'].includes(ctx.path)) {
+  if (!ctx.user && !ignorePath.includes(ctx.path)) {
     ctx.redirect('/api/user/oauth2');
   } else {
     await next();

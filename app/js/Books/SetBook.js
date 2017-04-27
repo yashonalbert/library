@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import isUndefined from 'lodash.isundefined';
 import React from 'react';
 import { Container, NavBar, List, Field, Modal, View } from 'amazeui-touch';
 
@@ -49,7 +49,7 @@ export default class SetBook extends React.Component {
   }
 
   defaultTotalNum() {
-    if (_.isUndefined(this.state.book.totalNum)) {
+    if (isUndefined(this.state.book.totalNum)) {
       let book = this.state.book;
       book.totalNum = 1;
       this.setState({ book });
@@ -69,23 +69,20 @@ export default class SetBook extends React.Component {
     }).then((res) => res.json()).then((json) => {
       switch (json.msg) {
         case 'set success':
-          this.setState({
+          return this.setState({
             isModalOpen: true,
-            modalContext: '提交成功'
+            modalContext: '提交成功。'
           });
-          break;
         case 'stock over limit':
-          this.setState({
+          return this.setState({
             isModalOpen: true,
-            modalContext: '库存不能低于最小值'
+            modalContext: '库存不能低于最小值。'
           });
-          break;
         default:
-          this.setState({
+          return this.setState({
             isModalOpen: true,
-            modalContext: '操作失败'
-          }, () => this.context.router.push('/'));
-          break;
+            modalContext: '操作失败。'
+          });
       }
     });
   }

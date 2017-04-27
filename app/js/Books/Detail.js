@@ -36,9 +36,15 @@ export default class Detail extends React.Component {
   }
 
   componentWillMount() {
-    this.getBook().then((book) => {
-      this.getLentValidation(book.id).then((valid) => {
-        this.setState({ book, valid });
+    return this.getBook().then((book) => {
+      if (book.msg === 'book not found') {
+        return this.setState({
+          isModalOpen: true,
+          modalContext: '书籍不在库存中,可返回主页推荐该书籍。'
+        });
+      }
+      return this.getLentValidation(book.id).then((valid) => {
+        return this.setState({ book, valid });
       });
     });
   }
@@ -60,7 +66,7 @@ export default class Detail extends React.Component {
       } else {
         this.setState({
           isModalOpen: true,
-          modalContext: '操作失败'
+          modalContext: '操作失败。'
         });
       }
     });
@@ -101,6 +107,7 @@ export default class Detail extends React.Component {
       }
       return (<Button hollow block disable>{`借阅（${this.state.valid.desc}）`}</Button>);
     }
+    return null;
   }
 
   render() {

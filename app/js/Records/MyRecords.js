@@ -1,4 +1,3 @@
-import moment from 'moment';
 import React from 'react';
 import { Container, NavBar, List, View } from 'amazeui-touch';
 import { Link } from 'react-router';
@@ -42,8 +41,8 @@ export default class MyRecords extends React.Component {
       return (
         <List.Item
           title={record.book.title}
-          subTitle={this.statusFormat(record.status)}
-          after={`借阅时间：${moment(record.lentTime).format('YYYY年M月D日')}`}
+          subTitle={`借阅时间：${record.lentTime}`}
+          after={this.statusFormat(record.status)}
           linkComponent={Link}
           linkProps={{to: {pathname: `/records/${record.id}`}}}
           {...record}

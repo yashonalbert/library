@@ -1,124 +1,79 @@
 import _ from 'lodash';
 import Router from 'koa-router';
+import multer from 'koa-multer';
 import { requireAdmin } from '../middleware';
-import { BookModel, RecordModel } from '../models';
+import { BookModel, RecordModel, QueueModel } from '../models';
 
 const router = Router({ prefix: '/api/books' });
-
-function toJson(code, msg, ctx) {
-  const json = {
-    code,
-    msg,
-    request: `${ctx.method} ${ctx.url}`,
-  };
-  return json;
-}
+const upload = multer({ dest: 'tmp/' });
 
 router.param('bookID', async (bookID, ctx, next) => {
-  try {
-    const result = await BookModel.getBook(bookID);
-    if (_.isNull(result)) {
-      ctx.body = toJson(203, 'book not found', ctx);
-    } else {
-      ctx.book = result;
-      await next();
-    }
-  } catch (error) {
-    console.log(error);
+  const result = await BookModel.getBook(bookID);
+  if (_.isNull(result)) {
+    ctx.throw('book not found', 203);
+  } else {
+    ctx.book = result;
+    await next();
   }
+});
+
+// 测试multiple，成功后删除该路由
+router.get('/file', async (ctx) => {
+  await BookModel.multiple('tmp/0f203e15d7b644dba7348456ba71747e');
+  ctx.body = ctx.toJson('success', 200);
+});
+
+router.post('/multiple', upload.single('file'), async (ctx) => {
+  await BookModel.multiple(ctx.req.file.path);
+  ctx.body = ctx.toJson('multiple success', 200);
+});
+
+router.get('/queue', async (ctx) => {
+  const success = await QueueModel.findAll({ where: { isQueue: true } });
+  const fail = await QueueModel.findAll({ where: { isQueue: false } });
+  ctx.body = {
+    success,
+    fail,
+  };
 });
 
 router.post('/recommend', async (ctx) => {
-  try {
-    await RecordModel.sendNotification('recommend', ctx.request.body);
-    ctx.body = toJson(200, 'recommend success', ctx);
-  } catch (error) {
-    console.log(error);
-  }
+  await RecordModel.sendNotification('recommend', ctx.request.body);
+  ctx.body = ctx.toJson('recommend success', 200);
 });
 
 router.get('/count', async (ctx) => {
-  try {
-    if (_.isUndefined(ctx.query.keyWord)) {
-      ctx.query.keyWord = '';
-    }
-    const { keyWord, status } = ctx.query;
-    const result = await BookModel.getBookCount(keyWord, status);
-    if (result === 'invalid status') {
-      ctx.body = toJson(400, 'invalid status', ctx);
-    } else {
-      ctx.body = { count: result };
-    }
-  } catch (error) {
-    console.log(error);
+  if (_.isUndefined(ctx.query.keyWord)) {
+    ctx.query.keyWord = '';
   }
+  const { keyWord, status } = ctx.query;
+  const result = await BookModel.getBookCount(keyWord, status);
+  ctx.body = { count: result };
 });
 
 router.get('/search', async (ctx) => {
-  try {
-    const { keyWord, status, page } = ctx.query;
-    const result = await BookModel.getBookByStatus(keyWord, status, page);
-    if (result === 'invalid status') {
-      ctx.body = toJson(400, 'invalid status', ctx);
-    } else {
-      ctx.body = result;
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  const { keyWord, status, page } = ctx.query;
+  ctx.body = await BookModel.getBookByStatus(keyWord, status, page);
 });
 
 router.get('/bookList', requireAdmin, async (ctx) => {
-  try {
-    const { status, page } = ctx.query;
-    const result = await BookModel.getBookByStatus('', status, page);
-    if (result === 'invalid status') {
-      ctx.body = toJson(400, 'invalid status', ctx);
-    } else {
-      ctx.body = result;
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  const { status, page } = ctx.query;
+  ctx.body = await BookModel.getBookByStatus('', status, page);
 });
 
 router.get('/requestBook', async (ctx) => {
-  try {
-    ctx.body = await BookModel.requestBook(ctx.query.isbn);
-  } catch (error) {
-    if (!_.isUndefined(error.error.msg) && error.error.msg === 'book_not_found') {
-      ctx.body = toJson(203, 'book not found', ctx);
-    } else if (!_.isUndefined(error.error.msg) && error.error.msg === 'invalid_request_uri') {
-      ctx.body = toJson(400, 'invalid request uri', ctx);
-    } else {
-      console.log(error);
-    }
-  }
+  ctx.body = await BookModel.requestBook(ctx.query.isbn);
 });
 
 router.post('/setBook', requireAdmin, async (ctx) => {
-  try {
-    const book = _.omit(ctx.request.body, ['action']);
-    book.totalNum = Number(book.totalNum);
-    const result = await BookModel.setBook(book, ctx.request.body.action);
-    if (result === 'invalid action') {
-      ctx.body = toJson(400, 'invalid action', ctx);
-    } else if (result === 'stock over limit') {
-      ctx.body = toJson(400, 'stock over limit', ctx);
-    } else {
-      ctx.body = toJson(200, 'set success', ctx);
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  const book = _.omit(ctx.request.body, ['action']);
+  book.totalNum = Number(book.totalNum);
+  await BookModel.setBook(book, ctx.request.body.action);
+  ctx.body = ctx.toJson('set success', 200);
 });
 
 router.get('/lentValidation/:bookID', async (ctx) => {
-  try {
-    ctx.body = await ctx.user.lentValidation(ctx.params.bookID);
-  } catch (error) {
-    console.log(error);
-  }
+  ctx.body = await ctx.user.lentValidation(ctx.params.bookID);
 });
 
 router.get('/:bookID', async (ctx) => {
@@ -126,17 +81,8 @@ router.get('/:bookID', async (ctx) => {
 });
 
 router.post('/:bookID', requireAdmin, async (ctx) => {
-  try {
-    const result = await ctx.book.changeStatus(ctx.request.body.action);
-    if (result === 'invalid action') {
-      ctx.body = toJson(400, 'invalid action', ctx);
-    } else if (result === 'lentCount > 0') {
-      ctx.body = toJson(400, 'lentCount > 0', ctx);
-    } else {
-      ctx.body = toJson(200, 'change success', ctx);
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  await ctx.book.changeStatus(ctx.request.body.action);
+  ctx.body = ctx.toJson('change success', 200);
 });
+
 export default router;

@@ -7,6 +7,8 @@ import config from '../utils/config';
 
 const RecordModel = sequelize.define('record', {
   lentTime: Sequelize.DATE,
+  noticTime: Sequelize.DATE,
+  expiryTime: Sequelize.DATE,
   returnTime: Sequelize.DATE,
   status: {
     type: Sequelize.STRING,
@@ -20,7 +22,11 @@ const RecordModel = sequelize.define('record', {
       } else if (status === 'lent') {
         status = { in: ['lent', 'returned', 'outdated'] };
       } else {
-        return Promise.resolve('invalid status');
+        return Promise.reject({
+          message: 'invalid status',
+          statusCode: 400,
+          status: 400,
+        });
       }
       return this.findAll({
         offset: (page - 1) * 10,
@@ -42,7 +48,11 @@ const RecordModel = sequelize.define('record', {
       } else if (status === 'lent') {
         status = { in: ['lent', 'returned', 'outdated'] };
       } else {
-        return Promise.resolve('invalid status');
+        return Promise.reject({
+          message: 'invalid status',
+          statusCode: 400,
+          status: 400,
+        });
       }
       return this.findAll({
         where: { status },
@@ -64,7 +74,11 @@ const RecordModel = sequelize.define('record', {
       } else if (status === 'lent') {
         status = { in: ['lent', 'returned', 'outdated'] };
       } else {
-        return Promise.resolve('invalid status');
+        return Promise.reject({
+          message: 'invalid status',
+          statusCode: 400,
+          status: 400,
+        });
       }
       if (_.isEmpty(keyWord)) {
         return this.count({ where: { status } });
@@ -118,7 +132,11 @@ const RecordModel = sequelize.define('record', {
     getRecordByISBN(isbn) {
       return sequelize.model('book').getBook(isbn).then((book) => {
         if (_.isNull(book)) {
-          return Promise.resolve('book not found');
+          return Promise.reject({
+            message: 'book not found',
+            statusCode: 400,
+            status: 400,
+          });
         }
         return this.findAll({
           where: {
@@ -172,7 +190,11 @@ const RecordModel = sequelize.define('record', {
             if (valid === 'valid') {
               return this.create(recordDoc);
             }
-            return Promise.resolve('invalid book or user');
+            return Promise.reject({
+              message: 'invalid book or user',
+              statusCode: 400,
+              status: 400,
+            });
           });
         }
         return old.update({ updatedAt: new Date() });
@@ -192,48 +214,82 @@ const RecordModel = sequelize.define('record', {
     returnBook(recordID) {
       return this.getRecordById(recordID).then((record) => {
         if (_.isNull(record)) {
-          return Promise.resolve('record not found');
+          return Promise.reject({
+            message: 'record not found',
+            statusCode: 400,
+            status: 400,
+          });
         }
         return record.returnBook();
       });
     },
     sendNotification(template, data) {
       const to = { touser: '' };
-      const message = { safe: '0' };
-      return sequelize.model('user').findAll({
-        where: {
-          message: 'on',
-          role: 'admin',
-        },
-      }).then((users) => {
-        users = users.map((user) => {
-          user = user.toJSON();
-          return user.corpUserID;
+      const message = {
+        msgtype: 'news',
+        safe: '0',
+      };
+      if (template === 'expiryBefore') {
+        to.touser = data.user.corpUserID;
+        const articles = [{
+          title: `【还书提醒】《${data.book.title}》`,
+          description: '您有书籍将在3天后到期，请及时还书。',
+          url: `http://${config.domain}/#/records/${data.id}`,
+          picurl: data.book.image,
+        }];
+        message.news = { articles };
+      } else if (template === 'expiryAfter') {
+        to.touser = data.user.corpUserID;
+        const articles = [{
+          title: `【还书提醒】《${data.book.title}》`,
+          description: '您有书籍已经到期，请及时还书。',
+          url: `http://${config.domain}/#/records/${data.id}`,
+          picurl: data.book.image,
+        }];
+        message.news = { articles };
+      } else {
+        return sequelize.model('user').findAll({
+          where: {
+            message: 'on',
+            role: 'admin',
+          },
+        }).then((users) => {
+          users = users.map((user) => {
+            user = user.toJSON();
+            return user.corpUserID;
+          });
+          users = users.join('|');
+          if (template === 'lendBook') {
+            to.touser = users;
+            const articles = [{
+              title: `【借阅申请】《${data.book.title}》`,
+              description: `借阅人：${data.user.name}`,
+              url: `http://${config.domain}/#/records/all`,
+              picurl: data.book.image,
+            }];
+            message.news = { articles };
+          }
+          if (template === 'recommend') {
+            to.touser = users;
+            const info = _.compact(_.values(_.pick(data, [
+              'subtitle', 'origin_title', 'author', 'translator', 'publisher', 'pubdate', 'isbn',
+            ]))).join(' / ');
+            const articles = [{
+              title: `【图书推荐】${data.title}`,
+              description: info,
+              url: data.alt,
+              picurl: data.image,
+            }];
+            message.news = { articles };
+          }
+          return Promise.reject({
+            message: 'invalid template',
+            statusCode: 400,
+            status: 400,
+          });
         });
-        users = users.join('|');
-        if (template === 'lendBook') {
-          to.touser = users;
-          message.msgtype = 'text';
-          const content =
-            `${data.user.name}申请借阅《${data.book.title}》<a href="http://${config.domain}/#/records/all">点击进入授权页</a>`;
-          message.text = { content };
-        }
-        if (template === 'recommend') {
-          to.touser = users;
-          message.msgtype = 'news';
-          const info = _.compact(_.values(_.pick(data, [
-            'subtitle', 'origin_title', 'author', 'translator', 'publisher', 'pubdate', 'isbn',
-          ]))).join(' / ');
-          const articles = [{
-            title: `【图书推荐】${data.title}`,
-            description: info,
-            url: data.alt,
-            picurl: data.image,
-          }];
-          message.news = { articles };
-        }
-        return Promise.promisify(wechat.send, { context: wechat })(to, message);
-      });
+      }
+      return Promise.promisify(wechat.send, { context: wechat })(to, message);
     },
   },
   instanceMethods: {
@@ -245,7 +301,11 @@ const RecordModel = sequelize.define('record', {
           returnTime: new Date(),
         });
       }
-      return Promise.resolve('invalid returnBook');
+      return Promise.reject({
+        message: 'invalid returnBook',
+        statusCode: 400,
+        status: 400,
+      });
     },
     confirm(action) {
       // TODO 非原子判断
@@ -254,14 +314,23 @@ const RecordModel = sequelize.define('record', {
         if (action === 'rejected') {
           actionPromise = this.update({ status: 'rejected' });
         } else {
+          const now = new Date();
+          const notic = now.valueOf() + (27 * 24 * 60 * 60 * 1000);
+          const expiry = now.valueOf() + (30 * 24 * 60 * 60 * 1000);
           actionPromise = this.update({
             status: 'lent',
             lentTime: new Date(),
+            noticTime: new Date(notic),
+            expiryTime: new Date(expiry),
           });
         }
         return actionPromise;
       }
-      return Promise.resolve('invalid confirm');
+      return Promise.reject({
+        message: 'invalid confirm',
+        statusCode: 400,
+        status: 400,
+      });
     },
   },
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, List, Icon, Field, Button, NavBar, Group, Switch, View } from 'amazeui-touch';
+import { Container, List, Icon, Field, Button, NavBar, Group, Switch, Modal, View } from 'amazeui-touch';
 import { Link } from 'react-router';
 
 export default class Home extends React.Component {
@@ -10,6 +10,8 @@ export default class Home extends React.Component {
   getInitialState() {
     return {
       isSwitchChecked: null,
+      isModalOpen: false,
+      modalContext: '',
       role: '',
       admin: [],
       user: [{
@@ -71,6 +73,32 @@ export default class Home extends React.Component {
     })
   }
 
+  closeMsg() {
+    return this.setState({
+      isModalOpen: false,
+      modalContext: ''
+    });
+  }
+
+  renderNav() {
+    if (this.state.role === 'admin') {
+      return (
+        <NavBar
+          amStyle="primary"
+          title="松滋公司职工书屋"
+          rightNav={[{ title: '桌面登录' }]}
+          onAction={this.getToken.bind(this)}
+        />
+      );
+    }
+    return (
+      <NavBar
+        amStyle="primary"
+        title="松滋公司职工书屋"
+      />
+    );
+  }
+
   renderAdminItem() {
     return this.state.admin.map((option, index) => {
       return (
@@ -88,9 +116,20 @@ export default class Home extends React.Component {
     if (this.state.role === 'admin') return (<List.Item role="header">管理员选项</List.Item>);
   }
 
+  getToken() {
+    return fetch('/api/users/getToken', {
+      credentials: 'include'
+    })
+      .then((res) => res.json())
+      .then((json) => this.setState({
+        isModalOpen: true,
+        modalContext: `验证码为：${json.token}（5分钟后过期）`
+      }));
+  }
+
   handleSwitch(event) {
     if (event.target.checked) {
-      fetch(`/api/users/messageSet`, {
+      return fetch(`/api/users/messageSet`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -99,7 +138,7 @@ export default class Home extends React.Component {
         credentials: 'include'
       }).then((res) => res.json())
     } else {
-      fetch(`/api/users/messageSet`, {
+      return fetch(`/api/users/messageSet`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -143,10 +182,7 @@ export default class Home extends React.Component {
   render() {
     return (
       <View>
-        <NavBar
-          amStyle="primary"
-          title="松滋公司职工书屋"
-        />
+        {this.renderNav()}
         <Container scrollable>
           <List className="margin-v-0">
             {this.adminHeader()}
@@ -158,6 +194,14 @@ export default class Home extends React.Component {
             {this.renderUserItem()}
           </List>
         </Container>
+        <Modal
+          role="alert"
+          title="松滋公司职工书屋"
+          isOpen={this.state.isModalOpen}
+          onDismiss={this.closeMsg.bind(this)}
+        >
+          {this.state.modalContext}
+        </Modal>
       </View>
     );
   }

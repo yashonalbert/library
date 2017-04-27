@@ -1,4 +1,4 @@
-import moment from 'moment';
+import compact from 'lodash.compact';
 import React from 'react';
 import { Container, NavBar, ButtonGroup, Button, List, Modal, Field, Icon, View } from 'amazeui-touch';
 import { Link } from 'react-router';
@@ -143,7 +143,7 @@ export default class AllRecords extends React.Component {
       credentials: 'include'
     }).then((res) => res.json()).then((json) => {
       if (json.msg === 'confirm success') {
-        const records = _.compact(this.state.records.map((record) => {
+        const records = compact(this.state.records.map((record) => {
           if (!record.id === recordID) {
             return record
           }
@@ -153,7 +153,7 @@ export default class AllRecords extends React.Component {
       } else {
         this.setState({
           isModalOpen: true,
-          modalContext: '操作失败'
+          modalContext: '操作失败。'
         });
       }
     });
@@ -208,8 +208,8 @@ export default class AllRecords extends React.Component {
         return (
           <List.Item
             title={record.book.title}
-            subTitle={this.statusFormat(record.status)}
-            after={`借阅时间：${moment(record.lentTime).format('YYYY年M月D日')}`}
+            subTitle={`借阅时间：${record.lentTime}`}
+            after={this.statusFormat(record.status)}
             linkComponent={Link}
             linkProps={{ to: { pathname: `/records/${record.id}` } }}
             {...record}

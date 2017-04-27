@@ -1,4 +1,3 @@
-import moment from 'moment';
 import React from 'react';
 import { Container, NavBar, Group, Grid, Col, List, View } from 'amazeui-touch';
 
@@ -74,8 +73,8 @@ export default class Record extends React.Component {
                 <p className="text-normal">
                   借阅人：{this.state.record.user.name}<br/>
                   书籍状态：{this.statusFormat(this.state.record.status)}<br/>
-                  借阅日期：{moment(this.state.record.lentTime).format('YYYY年M月D日')}<br/>
-                  到期日期：{moment(this.state.record.lentTime).format('YYYY年M月D日')}
+                  借阅日期：{this.state.record.lentTime}<br/>
+                  到期日期：{this.state.record.expiryTime}
                 </p>
               </Col>
             </Grid>

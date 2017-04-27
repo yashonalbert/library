@@ -1,5 +1,6 @@
-import _ from 'lodash';
-import moment from 'moment';
+import compact from 'lodash.compact';
+import isUndefined from 'lodash.isundefined';
+import cookie from 'react-cookie';
 import React from 'react';
 import {
   Container,
@@ -35,6 +36,9 @@ class Records extends React.Component {
   }
 
   componentWillMount() {
+    if (isUndefined(cookie.load('loggedIn'))) {
+      this.context.router.push('/');
+    }
     return this.getRecords(this.state.status, 1).then((records) => {
       this.getCount('all', this.state.status).then((count) => {
         this.setState({
@@ -175,7 +179,7 @@ class Records extends React.Component {
       credentials: 'include',
     }).then((res) => res.json()).then((json) => {
       if (json.msg === 'confirm success') {
-        const records = _.compact(this.state.records.map((record) => {
+        const records = compact(this.state.records.map((record) => {
           if (record.id !== recordID) {
             return record;
           }
@@ -282,9 +286,9 @@ class Records extends React.Component {
             <td>{record.book.title}</td>
             <td>{record.user.name}</td>
             <td>{this.statusFormat(record.status)}</td>
-            <td>{moment(record.lentTime).format('YYYY年M月D日')}</td>
-            <td>{moment(record.lentTime).format('YYYY年M月D日')}</td>
-            <td>{moment(record.lentTime).format('YYYY年M月D日')}</td>
+            <td>{record.lentTime}</td>
+            <td>{record.expiryTime}</td>
+            <td>{record.returnTime}</td>
             <td>
               <Button
                 radius
@@ -408,5 +412,9 @@ class Records extends React.Component {
     );
   }
 }
+
+Records.contextTypes = {
+  router: React.PropTypes.func.isRequired,
+};
 
 export default Records;

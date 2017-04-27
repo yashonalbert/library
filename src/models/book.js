@@ -1,4 +1,8 @@
+/* eslint-disable max-len */
+
 import _ from 'lodash';
+import fs from 'fs';
+import Promise from 'bluebird';
 import request from 'request-promise';
 import Sequelize from 'sequelize';
 import sequelize from '../utils/sequelize';
@@ -45,6 +49,38 @@ const BookModel = sequelize.define('book', {
     fields: ['doubanID'],
   }],
   classMethods: {
+    multiple(path) {
+      let results = fs.readFileSync(`./${path}`, 'utf-8');
+      results = _.compact(results.split(/\n/g));
+      const items = results.map((result) => {
+        if (result.indexOf(',') !== -1) {
+          result = result.split(',');
+          return {
+            isbn: result[0],
+            num: Number(result[1]),
+          };
+        }
+        return {
+          isbn: result,
+          num: 1,
+        };
+      });
+      return sequelize.transaction((t) => Promise.all(items.map((item) => this.findOne({ where: { isbn: item.isbn } }).then((old) => {
+        if (_.isNull(old)) {
+          return sequelize.model('queue').findOne({ where: { isbn: item.isbn } }).then((queue) => {
+            if (_.isNull(queue)) {
+              return sequelize.model('queue').create(item, { transaction: t });
+            }
+            queue.num += item.num;
+            return queue.update({ num: queue.num }, { transaction: t });
+          });
+        }
+        if (old.status === 'inexistence') {
+          return old.update({ status: 'existence', totalNum: item.num }, { transaction: t });
+        }
+        return old.update({ totalNum: old.totalNum + item.num }, { transaction: t });
+      }))));
+    },
     getBookByStatus(keyWord, status, page) {
       let where;
       if (status === 'existence') {
@@ -52,7 +88,11 @@ const BookModel = sequelize.define('book', {
       } else if (status === 'inexistence') {
         status = 'inexistence';
       } else {
-        return Promise.resolve('invalid status');
+        return Promise.reject({
+          message: 'invalid status',
+          statusCode: 400,
+          status: 400,
+        });
       }
       if (_.isEmpty(keyWord)) {
         where = { status };
@@ -90,7 +130,11 @@ const BookModel = sequelize.define('book', {
       } else if (status === 'inexistence') {
         status = 'inexistence';
       } else {
-        return Promise.resolve('invalid status');
+        return Promise.reject({
+          message: 'invalid status',
+          statusCode: 400,
+          status: 400,
+        });
       }
       if (_.isEmpty(keyWord)) {
         where = { status };
@@ -159,20 +203,36 @@ const BookModel = sequelize.define('book', {
         },
       }).then((old) => {
         if (!_.isNull(old) && ['update', 'auto', 'manual'].includes(action)) {
+          if (old.status === 'inexistence') {
+            return old.update({ status: 'existence', totalNum: book.totalNum });
+          }
           if (action === 'update') {
             return sequelize.model('record').getLentBooksCount(old.id).then((recordCount) => {
               if (book.totalNum >= recordCount) {
                 return old.update(book);
               }
-              return Promise.resolve('stock over limit');
+              return Promise.reject({
+                message: 'stock over limit',
+                statusCode: 400,
+                status: 400,
+              });
             });
           }
           book.totalNum += old.totalNum;
           return old.update(book);
         } else if (['auto', 'manual'].includes(action)) {
-          return this.create(book);
+          return sequelize.model('queue').findOne({ where: { isbn: book.isbn } }).then((queue) => {
+            if (_.isNull(queue)) {
+              return this.create(book);
+            }
+            return queue.destroy().then(() => this.create(book));
+          });
         }
-        return Promise.resolve('invalid action');
+        return Promise.reject({
+          message: 'invalid action',
+          statusCode: 400,
+          status: 400,
+        });
       });
     },
     getStock(bookID) {
@@ -200,14 +260,22 @@ const BookModel = sequelize.define('book', {
       if (action === 'delete') {
         return sequelize.model('record').getLentBooksCount(this.id).then((lentCount) => {
           if (lentCount > 0) {
-            return Promise.resolve('lentCount > 0');
+            return Promise.reject({
+              message: 'lentCount > 0',
+              statusCode: 400,
+              status: 400,
+            });
           }
           return this.update({ status: 'inexistence' });
         });
       } else if (action === 'recovery') {
         return this.update({ status: 'existence' });
       }
-      return Promise.resolve('invalid action');
+      return Promise.reject({
+        message: 'invalid action',
+        statusCode: 400,
+        status: 400,
+      });
     },
   },
 });

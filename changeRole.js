@@ -1,9 +1,13 @@
 import { UserModel } from './src/models';
 
+const users = ['wms'];
+
 UserModel.update({
   role: 'admin',
 }, {
   where: {
-    corpUserID: 'wms',
+    corpUserID: {
+      $or: users,
+    },
   },
-}).then(() => console.log('change ok!'));
+}).then(() => console.log('role success!')).catch((error) => console.log(error));

@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 
 import _ from 'lodash';
+import moment from 'moment';
 import Promise from 'bluebird';
 import Router from 'koa-router';
 import wechat from '../utils/wechat';
@@ -9,17 +10,9 @@ import config from '../utils/config';
 
 const router = Router({ prefix: '/api/user' });
 
-function toJson(code, msg, ctx) {
-  const json = {
-    code,
-    msg,
-    request: `${ctx.method} ${ctx.url}`,
-  };
-  return json;
-}
-
 router.get('/userInfo', (ctx) => {
   ctx.body = {
+    name: ctx.user.name,
     message: ctx.user.message,
     role: ctx.user.role,
   };
@@ -27,7 +20,7 @@ router.get('/userInfo', (ctx) => {
 
 router.get('/jssign', async (ctx) => {
   const param = {
-    debug: ctx.query.debug,
+    debug: false,
     jsApiList: ctx.query.jsApiList.split(','),
     url: ctx.query.url,
   };
@@ -58,36 +51,41 @@ router.get('/login', async (ctx) => {
 });
 
 router.post('/records', async (ctx) => {
-  try {
-    await RecordModel.lentBook(ctx.user.id, Number(ctx.request.body.bookID));
-    ctx.body = toJson(200, 'submit success', ctx);
-  } catch (error) {
-    console.log(error);
-  }
+  await RecordModel.lentBook(ctx.user.id, Number(ctx.request.body.bookID));
+  ctx.body = ctx.toJson('submit success', 200);
 });
 
 router.get('/records', async (ctx) => {
-  try {
-    ctx.body = await ctx.user.getLentRecord();
-  } catch (error) {
-    console.log();
-  }
+  const result = await ctx.user.getLentRecord();
+  let records = result.map((item) => {
+    let record = item.toJSON()
+    record.lentTime = moment(record.lentTime).format('YYYY年MM月DD日');
+    if (!_.isNull(record.returnTime)) {
+      record.returnTime = moment(record.lentTime).format('YYYY年MM月DD日');
+    }
+    return record;
+  });
+  ctx.body = records;
 });
 
 router.get('/records/:recordID', async (ctx) => {
-  try {
-    const result = await RecordModel.getRecordById(ctx.params.recordID);
-    if (_.isNull(result)) {
-      ctx.body = toJson(203, 'record not found', ctx);
-    } else if (result.userID === ctx.user.id) {
-      ctx.body = result;
-    } else {
-      ctx.body = toJson(401, 'permission denied', ctx);
-    }
-  } catch (error) {
-    console.log(error);
+  const result = await RecordModel.getRecordById(ctx.params.recordID);
+  if (_.isNull(result)) {
+    ctx.throw('record not found', 203);
+  } else if (result.userID === ctx.user.id) {
+    let records = result.map((item) => {
+      let record = item.toJSON()
+      record.lentTime = moment(record.lentTime).format('YYYY年MM月DD日');
+      record.expiryTime = moment(record.expiryTime).format('YYYY年MM月DD日');
+      if (!_.isNull(record.returnTime)) {
+        record.returnTime = moment(record.lentTime).format('YYYY年MM月DD日');
+      }
+      return record;
+    });
+    ctx.body = records;
+  } else {
+    ctx.throw('permission denied', 401);
   }
 });
-
 
 export default router;

@@ -1,4 +1,6 @@
-import lodash from 'lodash';
+import compact from 'lodash.compact';
+import values from 'lodash.values';
+import pick from 'lodash.pick';
 import React from 'react';
 import { Container, NavBar, Button, List, Field, Icon, View } from 'amazeui-touch';
 import { Link } from 'react-router';
@@ -112,7 +114,7 @@ export default class Existences extends React.Component {
 
   renderItems() {
     return this.state.books.map((book, index) => {
-      const info = _.compact(_.values(_.pick(book, [
+      const info = compact(values(pick(book, [
         'subtitle', 'origin_title', 'author', 'translator', 'publisher', 'pubdate', 'isbn' , 'price'
       ]))).join(' / ');
       return (
@@ -144,7 +146,7 @@ export default class Existences extends React.Component {
               amStyle="primary"
               onClick={this.handleSearch.bind(this)}
             >
-              <Icon name="search"></Icon>
+              <Icon name="search" />
             </Button>
           }
         />

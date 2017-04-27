@@ -1,4 +1,3 @@
-import moment from 'moment';
 import React from 'react';
 import { Container, NavBar, List, Button, Modal, View } from 'amazeui-touch';
 
@@ -48,12 +47,12 @@ export default class ReturnBook extends React.Component {
       } else if (json.msg === 'record not found') {
         this.setState({
           isModalOpen: true,
-          modalContext: '没有记录'
+          modalContext: '没有记录。'
         });
       } else {
         this.setState({
           isModalOpen: true,
-          modalContext: '操作失败'
+          modalContext: '操作失败。'
         });
       }
     });
@@ -81,7 +80,7 @@ export default class ReturnBook extends React.Component {
             <p className="text-normal">
               借阅人：{record.user.name}<br/>
               状态：{this.statusFormat(record.status)}<br/>
-              借阅日期：{moment(record.lentTime).format('YYYY年M月D日')}
+              借阅日期：{record.lentTime}
             </p>
           }
           after={

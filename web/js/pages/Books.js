@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import compact from 'lodash.compact';
+import isUndefined from 'lodash.isundefined';
+import cookie from 'react-cookie';
 import React from 'react';
 import {
   Container,
@@ -10,6 +12,7 @@ import {
   Modal,
   ModalTrigger,
   Article,
+  Badge,
   Image,
   Icon,
   Table,
@@ -23,6 +26,7 @@ class Books extends React.Component {
       page: 1,
       goPage: 1,
       count: 0,
+      queue: 0,
       status: 'existence',
       btnExistence: 'primary',
       btnInexistence: 'default',
@@ -33,17 +37,24 @@ class Books extends React.Component {
       keyWord: '',
       books: [],
       book: {},
+      file: {},
     };
   }
 
   componentWillMount() {
+    if (isUndefined(cookie.load('loggedIn'))) {
+      return this.context.router.push('/');
+    }
     return this.getBooks(this.state.status, 1).then((books) => {
       this.getCount('all', this.state.status).then((count) => {
-        this.setState({
-          count: count.count,
-          page: 1,
-          goPage: 1,
-          books,
+        this.getQueue().then((queue) => {
+          this.setState({
+            queue: queue.success.length,
+            count: count.count,
+            page: 1,
+            goPage: 1,
+            books,
+          });
         });
       });
     });
@@ -67,6 +78,12 @@ class Books extends React.Component {
       }).then((res) => res.json());
     }
     return Promise.resolve({ count: 0 });
+  }
+
+  getQueue() {
+    return fetch('/api/books/queue', {
+      credentials: 'include',
+    }).then((res) => res.json());
   }
 
   setBook() {
@@ -181,7 +198,7 @@ class Books extends React.Component {
       page = this.state.page + 1;
     }
     if (action === 'go') {
-      if (this.state.goPage < 1 && this.state.goPage || Math.ceil(this.state.count / 10) || !Number.isInteger(this.state.goPage)) {
+      if (this.state.goPage < 1 || this.state.goPage > Math.ceil(this.state.count / 10) || !Number.isInteger(this.state.goPage)) {
         return this.setState({
           isModalOpen: true,
           modal: (<Modal title="松滋公司职工书屋">页数应在1-{Math.ceil(this.state.count / 10)}之间</Modal>),
@@ -218,6 +235,77 @@ class Books extends React.Component {
       status: 'form',
       formAction: action,
       book,
+    });
+  }
+
+  fileChange(event) {
+    this.setState({ file: event.target.files[0] });
+  }
+
+  handleFile() {
+    const data = new FormData();
+    data.append('file', this.state.file);
+    data.append('user', 'hubot');
+    return fetch('/api/books/multiple', {
+      method: 'POST',
+      body: data,
+      credentials: 'include',
+    }).then((res) => res.json()).then((json) => {
+      if (json.msg === 'multiple success') {
+        return this.closeModal();
+      }
+      return this.setState({ modal: (<Modal title="松滋公司职工书屋">操作失败</Modal>) });
+    });
+  }
+
+  multiple() {
+    const modal = (
+      <Modal
+        title="松滋公司职工书屋"
+      >
+        <input type="file" onChange={this.fileChange.bind(this)} />
+        <p className="am-text-left">
+          文件格式： *.txt 文本格式<br />
+          内容格式：每本书以回车分隔，每本书有两个参数（ISBN, 添加数量）用,（英文逗号）分隔，数量默认为1的可以只写ISBN。<br />
+          例子：<br />
+          9787115281487,10<br />
+          9787115335500
+        </p>
+        <Button
+          radius
+          block
+          amStyle="primary"
+          className="am-margin-top"
+          onClick={this.handleFile.bind(this)}
+        >
+          确定
+        </Button>
+      </Modal>
+    );
+    this.setState({
+      isModalOpen: true,
+      modal,
+    });
+  }
+
+  queue() {
+    this.getQueue().then((queue) => {
+      const modal = (
+        <Modal
+          title="松滋公司职工书屋"
+        >
+          <p className="am-text-left">
+            导入进度：{this.state.queue}本未导入<br />
+            以下项目导入失败项，请手动导入：<br />
+            {this.rednerFailQueue(queue.fail)}
+          </p>
+        </Modal>
+      );
+      this.setState({
+        queue: queue.success.length,
+        isModalOpen: true,
+        modal,
+      });
     });
   }
 
@@ -272,7 +360,7 @@ class Books extends React.Component {
       credentials: 'include',
     }).then((res) => res.json()).then((json) => {
       if (json.msg === 'change success') {
-        const books = _.compact(this.state.books.map((book) => {
+        const books = compact(this.state.books.map((book) => {
           if (book.id !== bookID) {
             return book;
           }
@@ -294,6 +382,17 @@ class Books extends React.Component {
         });
       }
     });
+  }
+
+  rednerFailQueue(items) {
+    return items.map((item) => `${item.isbn},`);
+  }
+
+  renderSuccessQueue() {
+    if (this.state.queue > 0) {
+      return (<Badge amStyle="danger" radius>{this.state.queue}</Badge>);
+    }
+    return null;
   }
 
   renderFrom() {
@@ -610,7 +709,7 @@ class Books extends React.Component {
     return (
       <Container className="am-padding-top">
         <Grid className="doc-g">
-          <Col md={4}>
+          <Col md={3}>
             <ButtonGroup>
               <Button
                 radius
@@ -634,11 +733,19 @@ class Books extends React.Component {
               </Button>
             </ButtonGroup>
           </Col>
-          <Col md={3} mdOffset={1}>
+          <Col md={5}>
             <ButtonToolbar>
               <Button
                 radius
                 amStyle="primary"
+                onClick={this.queue.bind(this)}
+              >
+                导入进度 {this.renderSuccessQueue()}
+              </Button>
+              <Button
+                radius
+                amStyle="primary"
+                onClick={this.multiple.bind(this)}
               >
                 <Icon icon="file" /> 批量导入
               </Button>
@@ -678,5 +785,9 @@ class Books extends React.Component {
     );
   }
 }
+
+Books.contextTypes = {
+  router: React.PropTypes.func.isRequired,
+};
 
 export default Books;

@@ -2,6 +2,7 @@ import sequelize from '../utils/sequelize';
 import RecordModel from './record';
 import BookModel from './book';
 import UserModel from './user';
+import QueueModel from './queue';
 
 // book 拥有很多 record
 BookModel.hasMany(RecordModel, {
@@ -24,4 +25,4 @@ RecordModel.belongsTo(UserModel, {
   as: 'user',
 });
 
-export { RecordModel, BookModel, UserModel, sequelize };
+export { RecordModel, BookModel, UserModel, QueueModel, sequelize };

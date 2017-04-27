@@ -2,11 +2,9 @@ import React from 'react';
 import { Container, Group } from 'amazeui-touch';
 
 export default class Scan extends React.Component {
-
   componentWillMount() {
     const classScan = this;
     const params = {
-      debug: false,
       jsApiList: ['scanQRCode'].join(','),
       url: location.href.split('#')[0],
     };

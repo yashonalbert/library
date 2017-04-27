@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import compact from 'lodash.compact';
+import values from 'lodash.values';
+import pick from 'lodash.pick';
 import React from 'react';
 import { Container, NavBar, ButtonGroup, Button, List, Modal, Field, Icon, View } from 'amazeui-touch';
 import Tloader from 'react-touch-loader';
@@ -158,7 +160,7 @@ export default class BookList extends React.Component {
       } else {
         this.setState({
           isModalOpen: true,
-          modalContext: '操作失败'
+          modalContext: '操作失败。'
         });
       }
     });
@@ -167,7 +169,7 @@ export default class BookList extends React.Component {
 
   renderItems() {
     return this.state.books.map((book, index) => {
-      const info = _.compact(_.values(_.pick(book, [
+      const info = compact(values(pick(book, [
         'subtitle', 'origin_title', 'author', 'translator', 'publisher', 'pubdate', 'isbn'
       ]))).join(' / ');
       if (this.state.status === 'existence') {

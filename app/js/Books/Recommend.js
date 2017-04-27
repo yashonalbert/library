@@ -1,4 +1,5 @@
-import lodash from 'lodash';
+import isEmpty from 'lodash.isempty';
+import isUndefined from 'lodash.isundefined';
 import React from 'react';
 import { Container, NavBar, Modal, Group, Grid, Col, Accordion, Button, Field, Icon, View } from 'amazeui-touch';
 import { Link } from 'react-router';
@@ -45,10 +46,10 @@ export default class Recommend extends React.Component {
 
   handleSearch() {
     this.searchBook().then((book) => {
-      if (!_.isUndefined(book.msg)) {
+      if (!isUndefined(book.msg)) {
         this.setState({
           isModalOpen: true,
-          modalContext: '请输入正确的isbn'
+          modalContext: '请输入正确的ISBN。'
         });
       } else {
         this.setState({
@@ -83,14 +84,14 @@ export default class Recommend extends React.Component {
       } else {
         this.setState({
           isModalOpen: true,
-          modalContext: '操作失败'
+          modalContext: '操作失败。'
         });
       }
     });
   }
 
   renderRecommend() {
-    if (_.isEmpty(this.state.book)) {
+    if (isEmpty(this.state.book)) {
       return (<Button hollow block disable>推荐</Button>);
     }
     return (
@@ -106,7 +107,7 @@ export default class Recommend extends React.Component {
   }
 
   renderDetail() {
-    if (!_.isEmpty(this.state.book)) {
+    if (!isEmpty(this.state.book)) {
       return (
         <Group noPadded className="margin-v-0">
           <Group className="margin-v-0 padding">

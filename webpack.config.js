@@ -3,6 +3,8 @@ const autoprefixer = require('autoprefixer');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const isProd = process.env.NODE_ENV === 'production';
 const minPostfix = isProd ? '.min' : '';
@@ -31,6 +33,7 @@ const basePlugins = [
       collapseWhitespace: true,
     } : null,
   }),
+  // new BundleAnalyzerPlugin(),
 ];
 const envPlugins = isProd ? [
   new ExtractTextPlugin(`css/style.${hash}${minPostfix}.css`, {
@@ -40,6 +43,13 @@ const envPlugins = isProd ? [
     compress: {
       warnings: false,
     },
+  }),
+  new CompressionPlugin({
+    asset: '[path].gz[query]',
+    algorithm: 'gzip',
+    test: /\.js$|\.css$|\.html$/,
+    threshold: 10240,
+    minRatio: 0.8,
   }),
   new webpack.BannerPlugin(`build: ${new Date().toString()}`),
 ] : [
