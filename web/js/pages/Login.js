@@ -4,6 +4,8 @@ import cookie from 'react-cookie';
 import {
   Container,
   Panel,
+  Modal,
+  ModalTrigger,
   Input,
   Button,
 } from 'amazeui-react';
@@ -12,6 +14,8 @@ class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isModalOpen: false,
+      modal: (<Modal title="default">default</Modal>),
       token: '',
     };
   }
@@ -21,6 +25,14 @@ class Login extends React.Component {
       return null;
     }
     return this.context.router.push('/books');
+  }
+
+  closeModal() {
+    this.setState({
+      modal: (<Modal title="default">default</Modal>),
+      isModalOpen: false,
+      token: '',
+    });
   }
 
   tokenChange(event) {
@@ -36,11 +48,14 @@ class Login extends React.Component {
       body: `token=${this.state.token}`,
       credentials: 'include',
     }).then((res) => res.json()).then((json) => {
-      cookie.save('userID', json.userID);
-      cookie.save('userID.sig', json['userID.sig']);
-      cookie.save('loggedIn', json.loggedIn);
-      cookie.save('loggedIn.sig', json['loggedIn.sig']);
-      return this.context.router.push('/books');
+      console.log(json);
+      if (json.msg === 'login success') {
+        return this.context.router.push('/books');
+      }
+      return this.setState({
+        isModalOpen: true,
+        modal: (<Modal title="松滋公司职工书屋">登录失败</Modal>),
+      });
     });
   }
 
@@ -65,6 +80,11 @@ class Login extends React.Component {
             登录
           </Button>
         </Panel>
+        <ModalTrigger
+          modal={this.state.modal}
+          show={this.state.isModalOpen}
+          onClose={this.closeModal.bind(this)}
+        />
       </Container>
     );
   }

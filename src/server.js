@@ -51,7 +51,10 @@ server.use(async (ctx, next) => {
       ctx.body = ctx.toJson(error.message, errorCode);
     } else {
       loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
-      ctx.body = ctx.toJson(error.message, errorCode);
+      Raven.captureException(error, function (error, eventId) {
+        console.log('Reported error ' + eventId);
+        ctx.body = ctx.toJson(error.message, errorCode);
+      });
     }
   }
 });

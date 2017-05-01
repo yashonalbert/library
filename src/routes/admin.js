@@ -3,7 +3,7 @@ import moment from 'moment';
 import Router from 'koa-router';
 import LRU from 'lru';
 import { requireAdmin } from '../middleware';
-import { RecordModel } from '../models';
+import { RecordModel, UserModel } from '../models';
 
 const router = Router({ prefix: '/api/users' });
 let cache = new LRU({ maxAge: 5 * 60 * 1000 }),
@@ -49,31 +49,29 @@ router.get('/getToken', requireAdmin, async (ctx) => {
   function getToken() {
     let random = _.random(100000, 999999);
     if (cache.keys.includes(random)) {
-
       return getToken();
     }
     return random;
   }
-  const value = [
-    ctx.cookies.get('userID'),
-    ctx.cookies.get('userID.sig'),
-    ctx.cookies.get('loggedIn'),
-    ctx.cookies.get('loggedIn.sig')
-  ]
-  cache.set(getToken(), value);
-  ctx.body = { token: getToken() };
+  const userID = ctx.cookies.get('userID', { signed: true });
+  const user = await UserModel.findById(userID);
+  const token = getToken();
+  cache.set(token, user.id);
+  ctx.body = { token };
 });
 
-router.post('/checkToken', requireAdmin, async (ctx) => {
-  const result = cache.get(ctx.request.body.token);
-  if (!_.isNull(result)) {
-    cache.remove(ctx.request.body.token);
-    ctx.body = {
-      "userID": result[0],
-      "userID.sig": result[1],
-      "loggedIn": result[2],
-      "loggedIn.sig": result[3],
-    };
+router.post('/checkToken', async (ctx) => {
+  const userID = cache.get(ctx.request.body.token);
+  if (!_.isNull(userID)) {
+    ctx.user = await UserModel.findById(userID);
+    if (!_.isEmpty(ctx.user) && ctx.user.role === 'admin') {
+      cache.remove(ctx.request.body.token);
+      ctx.cookies.set('userID', userID, { signed: true });
+      ctx.cookies.set('loggedIn', 1, { httpOnly: false });
+      ctx.body = ctx.toJson(`login success`, 200);
+    } else {
+      ctx.throw('permission denied', 401);
+    }
   } else {
     ctx.throw('invalid token', 400);
   }

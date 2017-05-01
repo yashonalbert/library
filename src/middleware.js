@@ -5,6 +5,7 @@ const authentication = async (ctx, next) => {
   const ignorePath = [
     '/api/user/oauth2',
     '/api/user/login',
+    '/api/users/checkToken',
     '/css/amazeui.min.css',
     '/css/app.min.css',
     '/js/app.min.js',
@@ -23,7 +24,7 @@ const authentication = async (ctx, next) => {
 
 const requireAdmin = async (ctx, next) => {
   if (!ctx.user || ctx.user.role !== 'admin') {
-    ctx.throw(403);
+    ctx.throw('permission denied', 401);
   } else {
     await next();
   }
