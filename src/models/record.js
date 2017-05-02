@@ -259,6 +259,9 @@ const RecordModel = sequelize.define('record', {
             return user.corpUserID;
           });
           users = users.join('|');
+          if (_.isEmpty(users)) {
+            return Promise.resolve();
+          }
           if (template === 'lendBook') {
             to.touser = users;
             const articles = [{
@@ -268,6 +271,7 @@ const RecordModel = sequelize.define('record', {
               picurl: data.book.image,
             }];
             message.news = { articles };
+            return Promise.promisify(wechat.send, { context: wechat })(to, message);
           }
           if (template === 'recommend') {
             to.touser = users;
@@ -281,6 +285,7 @@ const RecordModel = sequelize.define('record', {
               picurl: data.image,
             }];
             message.news = { articles };
+            return Promise.promisify(wechat.send, { context: wechat })(to, message);
           }
           return Promise.reject({
             message: 'invalid template',
@@ -298,6 +303,7 @@ const RecordModel = sequelize.define('record', {
       if (['lent', 'outdated'].includes(this.status)) {
         return this.update({
           status: 'returned',
+          noticTime: null,
           returnTime: new Date(),
         });
       }
