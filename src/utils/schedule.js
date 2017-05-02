@@ -48,7 +48,7 @@ function spider() {
       };
       return BookModel.create(book);
     }).then(() => queue.destroy()).catch((error) => {
-      if (error.message === '') {
+      if (error.message.indexOf('rate_limit') !== -1) {
         pauseTime = new Date();
         return Promise.recjet();
       }
