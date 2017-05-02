@@ -48,7 +48,6 @@ class Login extends React.Component {
       body: `token=${this.state.token}`,
       credentials: 'include',
     }).then((res) => res.json()).then((json) => {
-      console.log(json);
       if (json.msg === 'login success') {
         return this.context.router.push('/books');
       }

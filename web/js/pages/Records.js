@@ -253,6 +253,7 @@ class Records extends React.Component {
           <tr>
             <td>{record.book.title}</td>
             <td>{record.user.name}</td>
+            <td>{record.user.mobile}</td>
             <td><Badge amStyle="warning" radius>未授权</Badge></td>
             <td />
             <td />
@@ -285,6 +286,7 @@ class Records extends React.Component {
           <tr>
             <td>{record.book.title}</td>
             <td>{record.user.name}</td>
+            <td>{record.user.mobile}</td>
             <td>{this.statusFormat(record.status)}</td>
             <td>{record.lentTime}</td>
             <td>{record.expiryTime}</td>
@@ -356,6 +358,7 @@ class Records extends React.Component {
             <tr>
               <th>标题</th>
               <th>申请人</th>
+              <th>联系电话</th>
               <th>书籍状态</th>
               <th>借阅日期</th>
               <th>到期日期</th>

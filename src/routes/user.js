@@ -61,7 +61,7 @@ router.get('/records', async (ctx) => {
     let record = item.toJSON()
     record.lentTime = moment(record.lentTime).format('YYYY年MM月DD日');
     if (!_.isNull(record.returnTime)) {
-      record.returnTime = moment(record.lentTime).format('YYYY年MM月DD日');
+      record.returnTime = moment(record.returnTime).format('YYYY年MM月DD日');
     }
     return record;
   });
@@ -78,7 +78,7 @@ router.get('/records/:recordID', async (ctx) => {
       record.lentTime = moment(record.lentTime).format('YYYY年MM月DD日');
       record.expiryTime = moment(record.expiryTime).format('YYYY年MM月DD日');
       if (!_.isNull(record.returnTime)) {
-        record.returnTime = moment(record.lentTime).format('YYYY年MM月DD日');
+        record.returnTime = moment(record.returnTime).format('YYYY年MM月DD日');
       }
       return record;
     });

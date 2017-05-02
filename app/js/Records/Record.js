@@ -71,7 +71,8 @@ export default class Record extends React.Component {
               </Col>
               <Col cols={6}>
                 <p className="text-normal">
-                  借阅人：{this.state.record.user.name}<br/>
+                  借阅人：{this.state.record.user.name}<br />
+                  联系电话：{this.state.record.user.mobile}<br />
                   书籍状态：{this.statusFormat(this.state.record.status)}<br/>
                   借阅日期：{this.state.record.lentTime}<br/>
                   到期日期：{this.state.record.expiryTime}
