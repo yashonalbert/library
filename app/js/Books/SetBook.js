@@ -1,3 +1,4 @@
+import isEmpty from 'lodash.isempty';
 import isUndefined from 'lodash.isundefined';
 import React from 'react';
 import { Container, NavBar, List, Field, Modal, View } from 'amazeui-touch';
@@ -38,6 +39,12 @@ export default class SetBook extends React.Component {
 
   componentWillMount() {
     this.getBook().then((book) => {
+      if (!isEmpty(book.msg) && book.msg.indexOf('book_not_found') !== -1) {
+        return this.setState({
+          isModalOpen: true,
+          modalContext: '找不到该书籍，请手动加载。'
+        });
+      }
       this.setState({ book });
     });
   }

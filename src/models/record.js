@@ -38,7 +38,7 @@ const RecordModel = sequelize.define('record', {
         }, {
           model: sequelize.model('user'),
           as: 'user',
-          where: { name: keyWord },
+          where: { name: { $like: `%${keyWord}%` } },
         }],
       });
     },
@@ -87,7 +87,7 @@ const RecordModel = sequelize.define('record', {
         include: [{
           model: sequelize.model('user'),
           as: 'user',
-          where: { name: keyWord },
+          where: { name: { $like: `%${keyWord}%` } },
         }],
       });
     },
@@ -130,30 +130,21 @@ const RecordModel = sequelize.define('record', {
       });
     },
     getRecordByISBN(isbn) {
-      return sequelize.model('book').getBook(isbn).then((book) => {
-        if (_.isNull(book)) {
-          return Promise.reject({
-            message: 'book not found',
-            statusCode: 400,
-            status: 400,
-          });
-        }
-        return this.findAll({
-          where: {
-            bookID: book.id,
-            status: {
-              in: ['lent', 'outdated'],
-            },
+      return this.findAll({
+        where: {
+          status: {
+            in: ['lent', 'outdated'],
           },
-          include: [{
-            model: sequelize.model('book'),
-            as: 'book',
-          }, {
-            model: sequelize.model('user'),
-            as: 'user',
-          }],
-          order: [['lentTime', 'ASC']],
-        });
+        },
+        order: [['lentTime', 'ASC']],
+        include: [{
+          model: sequelize.model('book'),
+          as: 'book',
+          where: { isbn },
+        }, {
+          model: sequelize.model('user'),
+          as: 'user',
+        }],
       });
     },
     validRecord(userID, bookID) {

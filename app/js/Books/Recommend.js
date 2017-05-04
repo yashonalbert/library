@@ -1,5 +1,4 @@
 import isEmpty from 'lodash.isempty';
-import isUndefined from 'lodash.isundefined';
 import React from 'react';
 import { Container, NavBar, Modal, Group, Grid, Col, Accordion, Button, Field, Icon, View } from 'amazeui-touch';
 import { Link } from 'react-router';
@@ -34,7 +33,15 @@ export default class Recommend extends React.Component {
 
   componentWillMount() {
     if (this.props.location.query.recommend === 'true') {
-      return this.getBook().then((book) => this.setState({ book, isRecommend: true }))
+      return this.getBook().then((book) => {
+        if (!isEmpty(book.msg) && book.msg.indexOf('book_not_found') !== -1) {
+          return this.setState({
+            isModalOpen: true,
+            modalContext: '找不到该书籍，请自行到管理员处推荐。'
+          });
+        }
+        return this.setState({ book, isRecommend: true })
+      });
     }
   }
 
@@ -46,7 +53,7 @@ export default class Recommend extends React.Component {
 
   handleSearch() {
     this.searchBook().then((book) => {
-      if (!isUndefined(book.msg)) {
+      if (!isEmpty(book.msg)) {
         this.setState({
           isModalOpen: true,
           modalContext: '请输入正确的ISBN。'

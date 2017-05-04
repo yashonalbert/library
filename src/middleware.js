@@ -13,8 +13,9 @@ const authentication = async (ctx, next) => {
     '/fonts/fontawesome-webfont.woff2',
     '/web.html'
   ];
-  const userID = ctx.cookies.get('userID', { signed: true });
-  ctx.user = await UserModel.findById(userID);
+  // const userID = ctx.cookies.get('userID', { signed: true });
+  // ctx.user = await UserModel.findById(userID);
+  ctx.user = await UserModel.findById(1);
   if (!ctx.user && !ignorePath.includes(ctx.path)) {
     ctx.redirect('/api/user/oauth2');
   } else {

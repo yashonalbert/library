@@ -145,8 +145,8 @@ export default class BookList extends React.Component {
       credentials: 'include'
     }).then((res) => res.json()).then((json) => {
       if (json.msg === 'change success') {
-        const books = _.compact(this.state.books.map((book, index) => {
-          if (!book.id === bookID) {
+        const books = compact(this.state.books.map((book) => {
+          if (book.id !== bookID) {
             return book
           }
           return null;

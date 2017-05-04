@@ -28,6 +28,7 @@ class Records extends React.Component {
       status: 'confirming',
       btnConfirming: 'primary',
       btnLent: 'default',
+      isSearch: false,
       isModalOpen: false,
       modal: (<Modal title="default">default</Modal>),
       keyWord: '',
@@ -79,14 +80,20 @@ class Records extends React.Component {
   }
 
   showPanel(status, amStyle) {
-    return this.getRecords(status, 1).then((records) => this.setState({
-      btnConfirming: amStyle.btnConfirming,
-      btnLent: amStyle.btnLent,
-      page: 1,
-      goPage: 1,
-      status,
-      records,
-    }));
+    return this.getRecords(status, 1).then((records) => {
+      this.getCount('all', status).then((count) => {
+        this.setState({
+          btnConfirming: amStyle.btnConfirming,
+          btnLent: amStyle.btnLent,
+          isSearch: false,
+          count: count.count,
+          page: 1,
+          goPage: 1,
+          status,
+          records,
+        });
+      });
+    });
   }
 
   keyWordChange(event) {

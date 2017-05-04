@@ -48,10 +48,8 @@ server.use(async (ctx, next) => {
     } else {
       loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
     }
-    Raven.captureException(error, function (error, eventId) {
-      console.log('Reported error ' + eventId);
-      ctx.body = ctx.toJson(error.message, errorCode);
-    });
+    await Raven.captureException(error);
+    ctx.body = ctx.toJson(error.message, errorCode);
   }
 });
 

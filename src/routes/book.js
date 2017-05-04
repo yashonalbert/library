@@ -17,12 +17,6 @@ router.param('bookID', async (bookID, ctx, next) => {
   }
 });
 
-// 测试multiple，成功后删除该路由
-router.get('/file', async (ctx) => {
-  await BookModel.multiple('tmp/0f203e15d7b644dba7348456ba71747e');
-  ctx.body = ctx.toJson('success', 200);
-});
-
 router.post('/multiple', upload.single('file'), async (ctx) => {
   await BookModel.multiple(ctx.req.file.path);
   ctx.body = ctx.toJson('multiple success', 200);

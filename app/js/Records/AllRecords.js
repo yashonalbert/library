@@ -144,7 +144,7 @@ export default class AllRecords extends React.Component {
     }).then((res) => res.json()).then((json) => {
       if (json.msg === 'confirm success') {
         const records = compact(this.state.records.map((record) => {
-          if (!record.id === recordID) {
+          if (record.id !== recordID) {
             return record
           }
           return null;

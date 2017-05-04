@@ -1,3 +1,4 @@
+import isEmpty from 'lodash.isempty';
 import React from 'react';
 import { Container, NavBar, Group, Modal, Grid, Col, Accordion, Button, View } from 'amazeui-touch';
 import { Link } from 'react-router';
@@ -37,7 +38,7 @@ export default class Detail extends React.Component {
 
   componentWillMount() {
     return this.getBook().then((book) => {
-      if (book.msg === 'book not found') {
+      if (!isEmpty(book.msg) && book.msg === 'book not found') {
         return this.setState({
           isModalOpen: true,
           modalContext: '书籍不在库存中,可返回主页推荐该书籍。'
