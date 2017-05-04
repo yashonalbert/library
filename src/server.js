@@ -40,19 +40,18 @@ server.use(async (ctx, next) => {
     await next();
   } catch (error) {
     const errorCode = error.statusCode || error.status || 500;
+    if (error.message.indexOf('access_token') !== -1) {
+      await wechat.getAccessToken();
+    }
     if (ctx.method === 'POST') {
       loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message} - ${ctx.request.body}`);
-      ctx.body = ctx.toJson(error.message, errorCode);
     } else {
-      if (error.message.indexOf('access_token') !== -1) {
-        await wechat.getAccessToken();
-      }
       loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
-      Raven.captureException(error, function (error, eventId) {
-        console.log('Reported error ' + eventId);
-        ctx.body = ctx.toJson(error.message, errorCode);
-      });
     }
+    Raven.captureException(error, function (error, eventId) {
+      console.log('Reported error ' + eventId);
+      ctx.body = ctx.toJson(error.message, errorCode);
+    });
   }
 });
 
