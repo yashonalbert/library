@@ -74,7 +74,6 @@ export default class Recommend extends React.Component {
   recommendBook() {
     let book = Object.keys(this.state.book).map(key => `${key}=${this.state.book[key]}&`).toString().replace(/,/g, '');
     book = book.slice(0, book.length - 1);
-    console.log(book)
     return fetch(`/api/books/recommend`, {
       method: 'POST',
       headers: {
