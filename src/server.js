@@ -7,7 +7,7 @@ import send from 'koa-send';
 import bodyParser from 'koa-bodyparser';
 import Raven from 'raven';
 import Logger from './utils/logger';
-import {spider, guard} from './utils/schedule';
+import { spider, guard, wechat } from './utils/schedule';
 import { userRoute, bookRoute, adminRoute } from './routes';
 import { sequelize } from './models';
 import { authentication } from './middleware';
@@ -17,12 +17,6 @@ const loggerKoa = Logger('koa');
 const loggerApi = Logger('api');
 
 Raven.config('https://506849fb91b94ed4abb86e2e99c3eab7:2db92e4ffcbd40798be87af5c28f2187@sentry.io/160378').install();
-
-server.on('error', function (error) {
-  Raven.captureException(error, function (error, eventId) {
-    console.log('Reported error ' + eventId);
-  });
-});
 
 server.keys = ['ZrlccFOdfHbnkEiL', 'GFNdT7CNVUfIh6HU'];
 
@@ -50,6 +44,9 @@ server.use(async (ctx, next) => {
       loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message} - ${ctx.request.body}`);
       ctx.body = ctx.toJson(error.message, errorCode);
     } else {
+      if (error.message.indexOf('access_token') !== -1) {
+        await wechat.getAccessToken();
+      }
       loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
       Raven.captureException(error, function (error, eventId) {
         console.log('Reported error ' + eventId);
