@@ -4,7 +4,7 @@
 // 1.0.0-rc.1 有点小问题，需要手动删掉
 //    node_modules/amazeui-touch/scss/amazeui.touch.scss 中的 `$ratchicons-path: 'fonts/';` 这一行
 // @see https://github.com/jtangelder/sass-loader#problems-with-url
-$ratchicons-path: "../../node_modules/amazeui-touch/fonts/";
+$ratchicons-path: "../../../node_modules/amazeui-touch/fonts/";
 
 @import "~amazeui-touch/scss/amazeui.touch.scss";
 

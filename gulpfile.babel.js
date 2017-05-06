@@ -27,16 +27,16 @@ const AUTOPREFIXER_BROWSERS = [
 
 const paths = {
   dist: {
-    base: 'dist',
-    js: 'dist/js',
-    css: 'dist/css',
-    i: 'dist/i',
-    fonts: 'dist/fonts',
+    base: 'lib/public',
+    js: 'lib/public/js',
+    css: 'lib/public/css',
+    i: 'lib/public/i',
+    fonts: 'lib/public/fonts',
   },
 };
 
 // JavaScript 格式校验
-gulp.task('eslint', () => gulp.src('web/js/**/*.js')
+gulp.task('eslint', () => gulp.src('src/web/js/**/*.js')
     .pipe(reload({ stream: true, once: true }))
     .pipe($.eslint())
     .pipe($.eslint.format())
@@ -44,7 +44,7 @@ gulp.task('eslint', () => gulp.src('web/js/**/*.js')
 );
 
 // 图片优化
-gulp.task('images', () => gulp.src('web/i/**/*')
+gulp.task('images', () => gulp.src('src/web/i/**/*')
     .pipe($.cache($.imagemin({
       progressive: true,
       interlaced: true,
@@ -54,41 +54,41 @@ gulp.task('images', () => gulp.src('web/i/**/*')
 
 // 拷贝相关资源
 gulp.task('copy', () => gulp.src([
-  'web/*',
-  '!web/*.html',
-  '!web/js',
-  '!web/less',
-  '!web/i',
+  'src/web/*',
+  '!src/web/*.html',
+  '!src/web/js',
+  '!src/web/less',
+  '!src/web/i',
   'node_modules/amazeui/dist/css/amazeui.min.css',
   'node_modules/amazeui/dist/fonts/*',
 ], {
-    dot: true,
-  }).pipe(gulp.dest((file) => {
-    const filePath = file.path.toLowerCase();
-    if (filePath.indexOf('.css') > -1) {
-      return paths.dist.css;
-    } else if (filePath.indexOf('fontawesome') > -1) {
-        return paths.dist.fonts;
-      }
-    return paths.dist.base;
-  }))
+  dot: true,
+}).pipe(gulp.dest((file) => {
+  const filePath = file.path.toLowerCase();
+  if (filePath.indexOf('.css') > -1) {
+    return paths.dist.css;
+  } else if (filePath.indexOf('fontawesome') > -1) {
+    return paths.dist.fonts;
+  }
+  return paths.dist.base;
+}))
     .pipe($.size({ title: 'copy' })));
 
 // 编译 Less，添加浏览器前缀
-gulp.task('styles', () => gulp.src(['web/less/app.less'])
+gulp.task('styles', () => gulp.src(['src/web/less/app.less'])
     .pipe($.less())
     .pipe($.postcss([autoprefixer({ browsers: AUTOPREFIXER_BROWSERS })]))
-    .pipe(gulp.dest('dist/css'))
+    .pipe(gulp.dest('lib/public/css'))
     .pipe($.csso())
     .pipe($.rename({ suffix: '.min' }))
-    .pipe(gulp.dest('dist/css'))
+    .pipe(gulp.dest('lib/public/css'))
     .pipe($.size({ title: 'styles' })));
 
 // 打包 Common JS 模块
 let b = browserify({
   cache: {},
   packageCache: {},
-  entries: ['./web/js/app.js'],
+  entries: ['./src/web/js/app.js'],
   debug: !isProduction,
   transform: ['babelify'],
 });
@@ -127,14 +127,14 @@ gulp.task('browserify', () => {
 });
 
 // 压缩 HTML
-gulp.task('html', () => gulp.src('web/**/*.html')
+gulp.task('html', () => gulp.src('src/web/**/*.html')
     .pipe($.minifyHtml())
     .pipe($.replace(/\{\{__VERSION__\}\}/g, isProduction ? '.min' : ''))
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest('lib/public'))
     .pipe($.size({ title: 'html' })));
 
 // 洗刷刷
-gulp.task('clean', () => del(['dist/*', '!dist/.git'], { dot: true }));
+gulp.task('clean', () => del(['public/*', '!public/.git'], { dot: true }));
 
 // 构建任务
 gulp.task('build', (cb) => {
@@ -143,10 +143,10 @@ gulp.task('build', (cb) => {
 
 // 监视源文件变化自动cd编译
 gulp.task('watch', () => {
-  gulp.watch('web/**/*.html', ['html']);
-  gulp.watch('web/less/**/*less', ['styles']);
-  gulp.watch('web/i/**/*', ['images']);
-  gulp.watch('web/**/*.js', ['eslint']);
+  gulp.watch('src/web/**/*.html', ['html']);
+  gulp.watch('src/web/less/**/*less', ['styles']);
+  gulp.watch('src/web/i/**/*', ['images']);
+  gulp.watch('src/web/**/*.js', ['eslint']);
 });
 
 // 默认任务
@@ -155,8 +155,8 @@ gulp.task('default', ['build', 'watch'], () => {
   browserSync({
     notify: false,
     logPrefix: 'ASK',
-    server: 'dist',
+    server: 'public',
   });
 
-  gulp.watch(['dist/**/*'], reload);
+  gulp.watch(['public/**/*'], reload);
 });

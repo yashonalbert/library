@@ -1,4 +1,4 @@
-import { UserModel } from './src/models';
+import { UserModel } from './src/server/models';
 
 const users = ['wms'];
 

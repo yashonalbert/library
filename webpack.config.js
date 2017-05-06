@@ -11,7 +11,7 @@ const minPostfix = isProd ? '.min' : '';
 const minify = isProd ? 'minimize' : '';
 const hash = '[hash:7]';
 
-const entry = './app/js/entry.js';
+const entry = './src/app/js/entry.js';
 const devEntry = [
   'webpack/hot/dev-server',
   'webpack-hot-middleware/client?reload=true',
@@ -24,8 +24,8 @@ const basePlugins = [
     },
   }),
   new HTMLWebpackPlugin({
-    title: 'Amaze UI Touch Starter Kit',
-    template: 'app/index.html',
+    title: 'Library',
+    template: 'src/app/index.html',
     // inject: false,
     prod: isProd,
     minify: isProd ? {
@@ -66,7 +66,7 @@ module.exports = {
   entry: isProd ? entry : devEntry,
 
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'lib/public'),
     filename: `js/app.${hash}${minPostfix}.js`,
     publicPath: '/',
   },
@@ -80,7 +80,7 @@ module.exports = {
           // 'eslint',
         ],
         include: [
-          path.join(__dirname, 'app/js'),
+          path.join(__dirname, 'src/app/js'),
           path.resolve(__dirname, 'node_modules/amazeui-touch/js'),
         ],
       },
@@ -98,13 +98,13 @@ module.exports = {
       {
         test: /\.jpe?g$|\.gif$|\.png|\.ico$/,
         loaders: [
-          'file?name=[path][name].[ext]&context=app',
+          'file?name=[path][name].[ext]&context=src/app',
           // 'image-webpack'
         ],
       },
       {
         test: /\.txt$|\.json$|\.webapp$/,
-        loader: 'file?name=[path][name].[ext]&context=app',
+        loader: 'file?name=[path][name].[ext]&context=src/app',
       },
       {
         test: /\.svg$/,
