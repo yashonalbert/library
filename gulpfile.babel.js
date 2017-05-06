@@ -61,13 +61,18 @@ gulp.task('copy', () => gulp.src([
   '!src/web/i',
   'node_modules/amazeui/dist/css/amazeui.min.css',
   'node_modules/amazeui/dist/fonts/*',
+  'node_modules/raven-js/dist/raven.min.js',
 ], {
   dot: true,
 }).pipe(gulp.dest((file) => {
   const filePath = file.path.toLowerCase();
+  if (filePath.indexOf('.js') > -1) {
+    return paths.dist.js;
+  }
   if (filePath.indexOf('.css') > -1) {
     return paths.dist.css;
-  } else if (filePath.indexOf('fontawesome') > -1) {
+  }
+  if (filePath.indexOf('fontawesome') > -1) {
     return paths.dist.fonts;
   }
   return paths.dist.base;

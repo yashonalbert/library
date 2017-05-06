@@ -6,7 +6,7 @@
   "scripts": {
     "test": "rm -rf ./test/library.sqlite ./test/logs ./test/config.json ; cross-env WorkPath=./test mocha --timeout 5000 --compilers js:babel-core/register test/*.test.js",
     "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha -- test/*.test.js",
-    "electron": "babel src -d lib ; electron .",
+    "electron": "babel src/server -d lib ; electron .",
     "nexe": "babel src/server -d lib ; node nexe.js",
     "role": "babel-node changeRole.js",
     "clean": "rimraf dist",
