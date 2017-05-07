@@ -8,6 +8,7 @@ const authentication = async (ctx, next) => {
     '/api/users/checkToken',
     '/css/amazeui.min.css',
     '/css/app.min.css',
+    '/js/raven.min.js',
     '/js/app.min.js',
     '/i/favicon.png',
     '/fonts/fontawesome-webfont.woff2',
