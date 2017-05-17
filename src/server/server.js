@@ -7,7 +7,8 @@ import send from 'koa-send';
 import bodyParser from 'koa-bodyparser';
 import Raven from 'raven';
 import Logger from './utils/logger';
-import { spider, guard, wechat } from './utils/schedule';
+import wechat from './utils/wechat';
+import { spider, guard } from './utils/schedule';
 import { userRoute, bookRoute, adminRoute } from './routes';
 import { sequelize } from './models';
 import { authentication } from './middleware';
@@ -41,15 +42,22 @@ server.use(async (ctx, next) => {
   } catch (error) {
     const errorCode = error.statusCode || error.status || 500;
     if (error.message.indexOf('access_token') !== -1) {
-      await wechat.getAccessToken();
-    }
-    if (ctx.method === 'POST') {
-      loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message} - ${ctx.request.body}`);
+      try {
+        await wechat.getAccessToken();
+      } catch (err) {
+        loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${err.message}`);
+        const errCode = err.statusCode || err.status || 500;
+        ctx.body = ctx.toJson(error.message, errCode);
+      }
     } else {
-      loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
+      if (ctx.method === 'POST') {
+        loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message} - ${ctx.request.body}`);
+      } else {
+        loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
+      }
+      await Raven.captureException(error);
+      ctx.body = ctx.toJson(error.message, errorCode);
     }
-    await Raven.captureException(error);
-    ctx.body = ctx.toJson(error.message, errorCode);
   }
 });
 
