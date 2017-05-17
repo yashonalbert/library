@@ -198,7 +198,7 @@ class Books extends React.Component {
       page = this.state.page + 1;
     }
     if (action === 'go') {
-      if (this.state.goPage < 1 || this.state.goPage > Math.ceil(this.state.count / 10) || !Number.isInteger(this.state.goPage)) {
+      if (this.state.goPage < 1 || this.state.goPage > Math.ceil(this.state.count / 10) || !Number.isInteger(Number(this.state.goPage))) {
         return this.setState({
           isModalOpen: true,
           modal: (<Modal title="松滋公司职工书屋">页数应在1-{Math.ceil(this.state.count / 10)}之间</Modal>),
