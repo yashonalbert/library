@@ -17,12 +17,12 @@ router.param('bookID', async (bookID, ctx, next) => {
   }
 });
 
-router.post('/multiple', upload.single('file'), async (ctx) => {
+router.post('/multiple', requireAdmin, upload.single('file'), async (ctx) => {
   await BookModel.multiple(ctx.req.file.path);
   ctx.body = ctx.toJson('multiple success', 200);
 });
 
-router.get('/queue', async (ctx) => {
+router.get('/queue', requireAdmin, async (ctx) => {
   const success = await QueueModel.findAll({ where: { isQueue: true } });
   const fail = await QueueModel.findAll({ where: { isQueue: false } });
   ctx.body = {
@@ -50,7 +50,7 @@ router.get('/search', async (ctx) => {
   ctx.body = await BookModel.getBookByStatus(keyWord, status, page);
 });
 
-router.get('/bookList', requireAdmin, async (ctx) => {
+router.get('/bookList', async (ctx) => {
   const { status, page } = ctx.query;
   ctx.body = await BookModel.getBookByStatus('', status, page);
 });
