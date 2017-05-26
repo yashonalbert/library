@@ -5,6 +5,7 @@ import Koa from 'koa';
 import cors from 'kcors';
 import send from 'koa-send';
 import bodyParser from 'koa-bodyparser';
+import Promise from 'bluebird';
 import Raven from 'raven';
 import Logger from './utils/logger';
 import wechat from './utils/wechat';
@@ -43,7 +44,8 @@ server.use(async (ctx, next) => {
     const errorCode = error.statusCode || error.status || 500;
     if (error.message.indexOf('access_token') !== -1) {
       try {
-        await wechat.getAccessToken();
+        loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
+        await Promise.promisify(wechat.getAccessToken(), { context: wechat });
       } catch (err) {
         loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${err.message}`);
         const errCode = err.statusCode || err.status || 500;
@@ -55,7 +57,7 @@ server.use(async (ctx, next) => {
       } else {
         loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
       }
-      await Raven.captureException(error);
+      await Promise.promisify(Raven.captureException, { context: Raven })(error);
       ctx.body = ctx.toJson(error.message, errorCode);
     }
   }
