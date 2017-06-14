@@ -23,7 +23,7 @@ router.get('/jssign', async (ctx) => {
     jsApiList: ctx.query.jsApiList.split(','),
     url: ctx.query.url,
   };
-  const jsConfig = await wechat.getJsConfig(param, ctx);
+  const jsConfig = await wechat.getJsConfig(param);
   jsConfig.timestamp = Number(jsConfig.timestamp);
   ctx.body = jsConfig;
 });
@@ -36,8 +36,8 @@ router.get('/login', async (ctx) => {
   if (!ctx.query.code) {
     ctx.throw(400, 'code is required !');
   }
-  const { UserId } = await wechat.getUserIdByCode(ctx.query.code, ctx);
-  const result = await wechat.getUser(UserId, ctx);
+  const { UserId } = await wechat.getUserIdByCode(ctx.query.code);
+  const result = await wechat.getUser(UserId);
   const userData = _.extend(_.pick(result, ['name', 'position', 'mobile', 'gender', 'email', 'avatar', 'status']),
     { department: _.toString(result.department), weixinID: result.weixinid, corpUserID: result.userid });
 
@@ -50,7 +50,7 @@ router.get('/login', async (ctx) => {
 });
 
 router.post('/records', async (ctx) => {
-  await RecordModel.lentBook(ctx.user.id, Number(ctx.request.body.bookID), ctx);
+  await RecordModel.lentBook(ctx.user.id, Number(ctx.request.body.bookID));
   ctx.body = ctx.toJson('submit success', 200);
 });
 

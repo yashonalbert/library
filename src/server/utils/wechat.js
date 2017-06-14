@@ -1,77 +1,65 @@
 import Wx from 'wechat-enterprise-api';
 import Promise from 'bluebird';
-import Logger from './logger';
 import config from './config';
 
-const loggerWechat = Logger('wechat');
-
 class Wechat {
-  constructor() {
-    this.wx = new Wx(config.wechat.corpid, config.wechat.secret, config.wechat.agentid);
+  constructor(corpid, secret, agentid) {
+    this.wx = new Wx(corpid, secret, agentid);
     this.retries = 0;
   }
 
-  getAccessToken(ctx) {
+  getAccessToken(method, args) {
     return Promise.promisify(this.wx.getAccessToken, { context: this.wx })
-      .then(() => ctx.redirect(`http://${config.domain}`))
-      .catch((error) => {
-        this.errorHandling(error, ctx);
+      .then(() => {
+        const newargs = Array.prototype.slice.call(args);
+        return method.apply(this, newargs);
       });
   }
 
-  errorHandling(error, ctx) {
+  errorHandling(error, method, args) {
     const errorCode = error.statusCode || error.status || 500;
     if (this.retries >= 5) {
-      loggerWechat.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
-      loggerWechat.info('retries >= 5');
-      ctx.body = {
-        msg: error.message,
+      return Promise.reject({
+        msg: `retries >= 5 - ${error.message}`,
         code: errorCode,
-        request: `${ctx.method} ${ctx.url}`,
-      };
-      return null;
+      });
     }
     if (error.message.indexOf('access_token') !== -1) {
       this.retries += 1;
-      loggerWechat.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
-      loggerWechat.info(`retrie ${this.retries}`);
-      return this.getAccessToken(ctx);
+      return this.getAccessToken(method, args);
     }
-    return Promise.reject({
-      message: error.message,
-      statusCode: errorCode,
-    });
+    return Promise.reject(error);
   }
 
-  getJsConfig(param, ctx) {
+  getJsConfig(param) {
     return Promise.promisify(this.wx.getJsConfig, { context: this.wx })(param)
       .catch((error) => {
-        this.errorHandling(error, ctx);
+        this.errorHandling(error, this.getJsConfig, arguments);
       });
   }
 
-  getUserIdByCode(code, ctx) {
+  getUserIdByCode(code) {
     return Promise.promisify(this.wx.getUserIdByCode, { context: this.wx })(code)
       .catch((error) => {
-        this.errorHandling(error, ctx);
+        this.errorHandling(error, this.getUserIdByCode, arguments);
       });
   }
 
-  getUser(userId, ctx) {
+  getUser(userId) {
     return Promise.promisify(this.wx.getUser, { context: this.wx })(userId)
       .catch((error) => {
-        this.errorHandling(error, ctx);
+        this.errorHandling(error, this.getUser, arguments);
       });
   }
 
-  send(to, message, ctx) {
+  send(to, message) {
     return Promise.promisify(this.wx.send, { context: this.wx })(to, message)
       .catch((error) => {
-        this.errorHandling(error, ctx);
+        this.errorHandling(error, this.send, arguments);
       });
   }
 }
 
-const wechat = new Wechat();
+const wechat = new Wechat(config.wechat.corpid, config.wechat.secret, config.wechat.agentid);
 
 export default wechat;
