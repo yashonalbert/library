@@ -32,7 +32,7 @@ router.get('/queue', requireAdmin, async (ctx) => {
 });
 
 router.post('/recommend', async (ctx) => {
-  await RecordModel.sendNotification('recommend', ctx.request.body);
+  await RecordModel.sendNotification('recommend', ctx.request.body, ctx);
   ctx.body = ctx.toJson('recommend success', 200);
 });
 

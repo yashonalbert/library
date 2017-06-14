@@ -169,7 +169,7 @@ const RecordModel = sequelize.define('record', {
         return 'invalid';
       });
     },
-    lentBook(userID, bookID) {
+    lentBook(userID, bookID, ctx) {
       const recordDoc = {
         userID,
         bookID,
@@ -200,7 +200,7 @@ const RecordModel = sequelize.define('record', {
           model: sequelize.model('user'),
           as: 'user',
         }],
-      })).then(record => this.sendNotification('lendBook', record));
+      })).then(record => this.sendNotification('lendBook', record, ctx));
     },
     returnBook(recordID) {
       return this.getRecordById(recordID).then((record) => {
@@ -214,7 +214,7 @@ const RecordModel = sequelize.define('record', {
         return record.returnBook();
       });
     },
-    sendNotification(template, data) {
+    sendNotification(template, data, ctx) {
       const to = { touser: '' };
       const message = {
         msgtype: 'news',
@@ -262,7 +262,7 @@ const RecordModel = sequelize.define('record', {
               picurl: data.book.image,
             }];
             message.news = { articles };
-            return Promise.promisify(wechat.send, { context: wechat })(to, message);
+            return wechat.send(to, message, ctx);
           }
           if (template === 'recommend') {
             to.touser = users;
@@ -276,7 +276,7 @@ const RecordModel = sequelize.define('record', {
               picurl: data.image,
             }];
             message.news = { articles };
-            return Promise.promisify(wechat.send, { context: wechat })(to, message);
+            return wechat.send(to, message, ctx);
           }
           return Promise.reject({
             message: 'invalid template',
@@ -285,7 +285,7 @@ const RecordModel = sequelize.define('record', {
           });
         });
       }
-      return Promise.promisify(wechat.send, { context: wechat })(to, message);
+      return wechat.send(to, message, ctx);
     },
   },
   instanceMethods: {

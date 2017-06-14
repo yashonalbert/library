@@ -2,7 +2,6 @@
 
 import _ from 'lodash';
 import moment from 'moment';
-import Promise from 'bluebird';
 import Router from 'koa-router';
 import wechat from '../utils/wechat';
 import { RecordModel, UserModel } from '../models';
@@ -24,7 +23,7 @@ router.get('/jssign', async (ctx) => {
     jsApiList: ctx.query.jsApiList.split(','),
     url: ctx.query.url,
   };
-  const jsConfig = await Promise.promisify(wechat.getJsConfig, { context: wechat })(param);
+  const jsConfig = await wechat.getJsConfig(param, ctx);
   jsConfig.timestamp = Number(jsConfig.timestamp);
   ctx.body = jsConfig;
 });
@@ -37,8 +36,8 @@ router.get('/login', async (ctx) => {
   if (!ctx.query.code) {
     ctx.throw(400, 'code is required !');
   }
-  const { UserId } = await Promise.promisify(wechat.getUserIdByCode, { context: wechat })(ctx.query.code);
-  const result = await Promise.promisify(wechat.getUser, { context: wechat })(UserId);
+  const { UserId } = await wechat.getUserIdByCode(ctx.query.code, ctx);
+  const result = await wechat.getUser(UserId, ctx);
   const userData = _.extend(_.pick(result, ['name', 'position', 'mobile', 'gender', 'email', 'avatar', 'status']),
     { department: _.toString(result.department), weixinID: result.weixinid, corpUserID: result.userid });
 
@@ -51,7 +50,7 @@ router.get('/login', async (ctx) => {
 });
 
 router.post('/records', async (ctx) => {
-  await RecordModel.lentBook(ctx.user.id, Number(ctx.request.body.bookID));
+  await RecordModel.lentBook(ctx.user.id, Number(ctx.request.body.bookID), ctx);
   ctx.body = ctx.toJson('submit success', 200);
 });
 

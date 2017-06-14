@@ -42,24 +42,13 @@ server.use(async (ctx, next) => {
     await next();
   } catch (error) {
     const errorCode = error.statusCode || error.status || 500;
-    if (error.message.indexOf('access_token') !== -1) {
-      try {
-        loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
-        await Promise.promisify(wechat.getAccessToken(), { context: wechat });
-      } catch (err) {
-        loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${err.message}`);
-        const errCode = err.statusCode || err.status || 500;
-        ctx.body = ctx.toJson(error.message, errCode);
-      }
+    if (ctx.method === 'POST') {
+      loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message} - ${ctx.request.body}`);
     } else {
-      if (ctx.method === 'POST') {
-        loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message} - ${ctx.request.body}`);
-      } else {
-        loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
-      }
-      await Promise.promisify(Raven.captureException, { context: Raven })(error);
-      ctx.body = ctx.toJson(error.message, errorCode);
+      loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
     }
+    await Promise.promisify(Raven.captureException, { context: Raven })(error);
+    ctx.body = ctx.toJson(error.message, errorCode);
   }
 });
 
