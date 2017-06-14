@@ -1,4 +1,5 @@
 import Wx from 'wechat-enterprise-api';
+import Promise from 'bluebird';
 import Logger from './logger';
 import config from './config';
 
