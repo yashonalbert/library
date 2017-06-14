@@ -5,58 +5,37 @@ import config from './config';
 class Wechat {
   constructor(corpid, secret, agentid) {
     this.wx = new Wx(corpid, secret, agentid);
-    this.retries = 0;
+    this.retry = false;
   }
 
-  getAccessToken(method, args) {
-    return Promise.promisify(this.wx.getAccessToken, { context: this.wx })
-      .then(() => {
-        const newargs = Array.prototype.slice.call(args);
-        return method.apply(this, newargs);
-      });
-  }
-
-  errorHandling(error, method, args) {
-    const errorCode = error.statusCode || error.status || 500;
-    if (this.retries >= 5) {
-      return Promise.reject({
-        msg: `retries >= 5 - ${error.message}`,
-        code: errorCode,
-      });
-    }
-    if (error.message.indexOf('access_token') !== -1) {
-      this.retries += 1;
-      return this.getAccessToken(method, args);
-    }
-    return Promise.reject(error);
+  ensure(method, ...args) {
+    return method.apply(this, args).catch((error) => {
+      if (this.retry) {
+        return Promise.reject(error);
+      }
+      this.retry = true;
+      if (error.message.indexOf('access_token') !== -1) {
+        return Promise.promisify(this.wx.getAccessToken, { context: this.wx })()
+          .then(() => method.apply(this, args));
+      }
+      return method.apply(this, args);
+    });
   }
 
   getJsConfig(param) {
-    return Promise.promisify(this.wx.getJsConfig, { context: this.wx })(param)
-      .catch((error) => {
-        this.errorHandling(error, this.getJsConfig, arguments);
-      });
+    return this.ensure(Promise.promisify(this.wx.getJsConfig, { context: this.wx }), param);
   }
 
   getUserIdByCode(code) {
-    return Promise.promisify(this.wx.getUserIdByCode, { context: this.wx })(code)
-      .catch((error) => {
-        this.errorHandling(error, this.getUserIdByCode, arguments);
-      });
+    return this.ensure(Promise.promisify(this.wx.getUserIdByCode, { context: this.wx }), code);
   }
 
   getUser(userId) {
-    return Promise.promisify(this.wx.getUser, { context: this.wx })(userId)
-      .catch((error) => {
-        this.errorHandling(error, this.getUser, arguments);
-      });
+    return this.ensure(Promise.promisify(this.wx.getUser, { context: this.wx }), userId);
   }
 
   send(to, message) {
-    return Promise.promisify(this.wx.send, { context: this.wx })(to, message)
-      .catch((error) => {
-        this.errorHandling(error, this.send, arguments);
-      });
+    return this.ensure(Promise.promisify(this.wx.send, { context: this.wx }), to, message);
   }
 }
 
