@@ -5,20 +5,22 @@ import config from './config';
 class Wechat {
   constructor(corpid, secret, agentid) {
     this.wx = new Wx(corpid, secret, agentid);
-    this.retry = false;
+    this.retryed = false;
   }
 
   ensure(method, ...args) {
     return method.apply(this, args).catch((error) => {
-      if (this.retry) {
-        return Promise.reject(error);
-      }
-      this.retry = true;
       if (error.message.indexOf('access_token') !== -1) {
+        if (this.retryed) {
+          this.retryed = false;
+          return Promise.reject(error);
+        }
+        this.retryed = true;
         return Promise.promisify(this.wx.getAccessToken, { context: this.wx })()
           .then(() => method.apply(this, args));
       }
-      return method.apply(this, args);
+      this.retryed = false;
+      return Promise.reject(error);
     });
   }
 
