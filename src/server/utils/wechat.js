@@ -9,19 +9,20 @@ class Wechat {
   }
 
   ensure(method, ...args) {
-    return method.apply(this, args).catch((error) => {
-      if (error.message.indexOf('access_token') !== -1) {
-        if (this.retryed) {
-          this.retryed = false;
-          return Promise.reject(error);
+    return method.apply(this, args)
+      .then((result) => {
+        this.retryed = false;
+        return result;
+      })
+      .catch((error) => {
+        if (error.message.indexOf('access_token') !== -1 && !this.retryed) {
+          this.retryed = true;
+          return Promise.promisify(this.wx.getAccessToken, { context: this.wx })()
+            .then(() => this.ensure(method, ...args));
         }
-        this.retryed = true;
-        return Promise.promisify(this.wx.getAccessToken, { context: this.wx })()
-          .then(() => method.apply(this, args));
-      }
-      this.retryed = false;
-      return Promise.reject(error);
-    });
+        this.retryed = false;
+        return Promise.reject(error);
+      });
   }
 
   getJsConfig(param) {
