@@ -12,6 +12,7 @@ const defaultConfig = {
     agentid: '',
   },
   logs_dir: undefined,
+  raven: '',
 };
 
 function getConfig(workPath) {

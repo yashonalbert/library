@@ -132,7 +132,7 @@ gulp.task('browserify', () => {
 });
 
 // 压缩 HTML
-gulp.task('html', () => gulp.src('src/web/**/*.html')
+gulp.task('html', () => gulp.src('src/web/*.html')
     .pipe($.minifyHtml())
     .pipe($.replace(/\{\{__VERSION__\}\}/g, isProduction ? '.min' : ''))
     .pipe(gulp.dest('lib/public'))
@@ -148,10 +148,10 @@ gulp.task('build', (cb) => {
 
 // 监视源文件变化自动cd编译
 gulp.task('watch', () => {
-  gulp.watch('src/web/**/*.html', ['html']);
-  gulp.watch('src/web/less/**/*less', ['styles']);
-  gulp.watch('src/web/i/**/*', ['images']);
-  gulp.watch('src/web/**/*.js', ['eslint']);
+  gulp.watch('src/web/*.html', ['html']);
+  gulp.watch('src/web/less/*.less', ['styles']);
+  gulp.watch('src/web/i/*', ['images']);
+  gulp.watch('src/web/*.js', ['eslint']);
 });
 
 // 默认任务
@@ -163,5 +163,5 @@ gulp.task('default', ['build', 'watch'], () => {
     server: 'public',
   });
 
-  gulp.watch(['public/**/*'], reload);
+  gulp.watch(['public/*'], reload);
 });

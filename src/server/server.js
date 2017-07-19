@@ -2,11 +2,11 @@ import 'babel-polyfill';
 
 import fs from 'fs';
 import Koa from 'koa';
-import cors from 'kcors';
 import send from 'koa-send';
 import bodyParser from 'koa-bodyparser';
 import Promise from 'bluebird';
 import Raven from 'raven';
+import config from './utils/config';
 import Logger from './utils/logger';
 import wechat from './utils/wechat';
 import { spider, guard } from './utils/schedule';
@@ -18,7 +18,7 @@ const server = new Koa();
 const loggerKoa = Logger('koa');
 const loggerApi = Logger('api');
 
-Raven.config('https://506849fb91b94ed4abb86e2e99c3eab7:2db92e4ffcbd40798be87af5c28f2187@sentry.io/160378').install();
+Raven.config(config.raven).install();
 
 server.keys = ['ZrlccFOdfHbnkEiL', 'GFNdT7CNVUfIh6HU'];
 
@@ -52,7 +52,6 @@ server.use(async (ctx, next) => {
   }
 });
 
-server.use(cors());
 server.use(bodyParser());
 server.use(authentication);
 
