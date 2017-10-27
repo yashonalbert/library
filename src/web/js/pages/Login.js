@@ -60,7 +60,7 @@ class Login extends React.Component {
 
   render() {
     return (
-      <Container className="">
+      <Container>
         <Panel className="panel-margin">
           <h2 className="am-text-center">松滋公司职工书屋登录页面</h2>
           <Input

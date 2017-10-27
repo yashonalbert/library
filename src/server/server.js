@@ -66,8 +66,8 @@ server.use(adminRoute.routes());
 
 server.use(async (ctx) => {
   if (ctx.path !== '/' && fs.existsSync(`${__dirname}/public${ctx.path}`)) {
-    if (['/index.html', 'web.html'].includes(ctx.path)) {
-      ctx.body = fs.readFileSync(`${__dirname}/public/${ctx.path}`, 'utf-8').replace('raven_config', config.raven);
+    if (['/index.html', '/web.html'].includes(ctx.path)) {
+      return ctx.body = fs.readFileSync(`${__dirname}/public${ctx.path}`, 'utf-8').replace('raven_config', config.raven);
     }
     return await send(ctx, `/lib/public${ctx.path}`);
   }
