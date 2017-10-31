@@ -47,7 +47,7 @@ class App extends Component {
       <div className="ask-page">
         <Topbar
           className="ask-header"
-          brand="松滋公司职工书屋"
+          brand="图书馆"
           inverse
         >
           <CollapsibleNav>

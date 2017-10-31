@@ -163,7 +163,7 @@ export default class Detail extends React.Component {
           </Group>
           <Modal
             role="alert"
-            title="松滋公司职工书屋"
+            title="图书馆"
             isOpen={this.state.isModalOpen}
             onDismiss={this.closeMsg.bind(this)}
           >

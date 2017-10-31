@@ -85,7 +85,7 @@ export default class Home extends React.Component {
       return (
         <NavBar
           amStyle="primary"
-          title="松滋公司职工书屋"
+          title="图书馆"
           rightNav={[{ title: '桌面登录' }]}
           onAction={this.getToken.bind(this)}
         />
@@ -94,7 +94,7 @@ export default class Home extends React.Component {
     return (
       <NavBar
         amStyle="primary"
-        title="松滋公司职工书屋"
+        title="图书馆"
       />
     );
   }
@@ -196,7 +196,7 @@ export default class Home extends React.Component {
         </Container>
         <Modal
           role="alert"
-          title="松滋公司职工书屋"
+          title="图书馆"
           isOpen={this.state.isModalOpen}
           onDismiss={this.closeMsg.bind(this)}
         >

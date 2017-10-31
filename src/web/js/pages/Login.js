@@ -53,7 +53,7 @@ class Login extends React.Component {
       }
       return this.setState({
         isModalOpen: true,
-        modal: (<Modal title="松滋公司职工书屋">登录失败</Modal>),
+        modal: (<Modal title="图书馆">登录失败</Modal>),
       });
     });
   }
@@ -62,7 +62,7 @@ class Login extends React.Component {
     return (
       <Container>
         <Panel className="panel-margin">
-          <h2 className="am-text-center">松滋公司职工书屋登录页面</h2>
+          <h2 className="am-text-center">图书馆登录页面</h2>
           <Input
             radius
             type="text"

@@ -12,7 +12,8 @@ const authentication = async (ctx, next) => {
     '/js/app.min.js',
     '/i/favicon.png',
     '/fonts/fontawesome-webfont.woff2',
-    '/web.html'
+    '/web.html',
+    '/WW_verify_RiQoPYCu1NaVAKvO.txt'
   ];
   const userID = ctx.cookies.get('userID', { signed: true });
   ctx.user = await UserModel.findById(userID);

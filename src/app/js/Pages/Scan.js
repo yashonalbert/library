@@ -22,7 +22,7 @@ export default class Scan extends React.Component {
         needResult: 1,
         scanType: ['qrCode', 'barCode'],
         success: (res) => {
-          const isbn = res.resultStr.slice(7);
+          const isbn = res.resultStr;
           switch (classScan.context.location.query.action) {
             case 'auto':
               classScan.context.router.push({

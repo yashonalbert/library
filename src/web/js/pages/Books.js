@@ -102,20 +102,20 @@ class Books extends React.Component {
         case 'set success':
           this.setState({
             isModalOpen: true,
-            modal: (<Modal title="松滋公司职工书屋">提交成功</Modal>),
+            modal: (<Modal title="图书馆">提交成功</Modal>),
             book: {},
           });
           break;
         case 'stock over limit':
           this.setState({
             isModalOpen: true,
-            modal: (<Modal title="松滋公司职工书屋">库存不能低于最小值</Modal>),
+            modal: (<Modal title="图书馆">库存不能低于最小值</Modal>),
           });
           break;
         default:
           this.setState({
             isModalOpen: true,
-            modal: (<Modal title="松滋公司职工书屋">操作失败</Modal>),
+            modal: (<Modal title="图书馆">操作失败</Modal>),
           });
           break;
       }
@@ -183,7 +183,7 @@ class Books extends React.Component {
       if (this.state.page === 1) {
         return this.setState({
           isModalOpen: true,
-          modal: (<Modal title="松滋公司职工书屋">已经是第一页了</Modal>),
+          modal: (<Modal title="图书馆">已经是第一页了</Modal>),
         });
       }
       page = this.state.page - 1;
@@ -192,7 +192,7 @@ class Books extends React.Component {
       if (this.state.page === Math.ceil(this.state.count / 10)) {
         return this.setState({
           isModalOpen: true,
-          modal: (<Modal title="松滋公司职工书屋">已经是最后一页了</Modal>),
+          modal: (<Modal title="图书馆">已经是最后一页了</Modal>),
         });
       }
       page = this.state.page + 1;
@@ -201,7 +201,7 @@ class Books extends React.Component {
       if (this.state.goPage < 1 || this.state.goPage > Math.ceil(this.state.count / 10) || !Number.isInteger(Number(this.state.goPage))) {
         return this.setState({
           isModalOpen: true,
-          modal: (<Modal title="松滋公司职工书屋">页数应在1-{Math.ceil(this.state.count / 10)}之间</Modal>),
+          modal: (<Modal title="图书馆">页数应在1-{Math.ceil(this.state.count / 10)}之间</Modal>),
         });
       }
       page = this.state.goPage;
@@ -254,14 +254,14 @@ class Books extends React.Component {
       if (json.msg === 'multiple success') {
         return this.closeModal();
       }
-      return this.setState({ modal: (<Modal title="松滋公司职工书屋">操作失败</Modal>) });
+      return this.setState({ modal: (<Modal title="图书馆">操作失败</Modal>) });
     });
   }
 
   multiple() {
     const modal = (
       <Modal
-        title="松滋公司职工书屋"
+        title="图书馆"
       >
         <input type="file" onChange={this.fileChange.bind(this)} />
         <p className="am-text-left">
@@ -292,7 +292,7 @@ class Books extends React.Component {
     this.getQueue().then((queue) => {
       const modal = (
         <Modal
-          title="松滋公司职工书屋"
+          title="图书馆"
         >
           <p className="am-text-left">
             导入进度：{this.state.queue}本未导入<br />
@@ -373,12 +373,12 @@ class Books extends React.Component {
       } else if (json.msg === 'lentCount > 0') {
         this.setState({
           isModalOpen: true,
-          modal: (<Modal title="松滋公司职工书屋">书籍有借出状态，不可删除。</Modal>),
+          modal: (<Modal title="图书馆">书籍有借出状态，不可删除。</Modal>),
         });
       } else {
         this.setState({
           isModalOpen: true,
-          modal: (<Modal title="松滋公司职工书屋">操作失败</Modal>),
+          modal: (<Modal title="图书馆">操作失败</Modal>),
         });
       }
     });

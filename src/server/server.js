@@ -47,7 +47,7 @@ server.use(async (ctx, next) => {
     } else {
       loggerApi.info(`${errorCode} - ${ctx.method} ${ctx.url} - ${error.message}`);
     }
-    await Promise.promisify(Raven.captureException, { context: Raven })(error);
+    // await Promise.promisify(Raven.captureException, { context: Raven })(error);
     ctx.body = ctx.toJson(error.message, errorCode);
   }
 });
@@ -72,7 +72,6 @@ server.use(async (ctx) => {
     return await send(ctx, `/lib/public${ctx.path}`);
   }
   return ctx.body = fs.readFileSync(`${__dirname}/public/index.html`, 'utf-8').replace('raven_config', config.raven);
-
 });
 
 export default server;

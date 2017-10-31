@@ -129,7 +129,7 @@ class Records extends React.Component {
       if (this.state.page === 1) {
         return this.setState({
           isModalOpen: true,
-          modal: (<Modal title="松滋公司职工书屋">已经是第一页了</Modal>),
+          modal: (<Modal title="图书馆">已经是第一页了</Modal>),
         });
       }
       page = this.state.page - 1;
@@ -138,7 +138,7 @@ class Records extends React.Component {
       if (this.state.page === Math.ceil(this.state.count / 10)) {
         return this.setState({
           isModalOpen: true,
-          modal: (<Modal title="松滋公司职工书屋">已经是最后一页了</Modal>),
+          modal: (<Modal title="图书馆">已经是最后一页了</Modal>),
         });
       }
       page = this.state.page + 1;
@@ -147,7 +147,7 @@ class Records extends React.Component {
       if (this.state.goPage > 1 || this.state.goPage < Math.ceil(this.state.count / 10) || !Number.isInteger(Number(this.state.goPage))) {
         return this.setState({
           isModalOpen: true,
-          modal: (<Modal title="松滋公司职工书屋">页数应在1-{Math.ceil(this.state.count / 10)}之间</Modal>),
+          modal: (<Modal title="图书馆">页数应在1-{Math.ceil(this.state.count / 10)}之间</Modal>),
         });
       }
       page = this.state.goPage;
@@ -199,7 +199,7 @@ class Records extends React.Component {
       } else {
         this.setState({
           isModalOpen: true,
-          modal: (<Modal title="松滋公司职工书屋">操作失败</Modal>),
+          modal: (<Modal title="图书馆">操作失败</Modal>),
         });
       }
     });
