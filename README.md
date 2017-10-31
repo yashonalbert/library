@@ -37,8 +37,9 @@ npm run pack //编译前端
 ## 移动端
 
 ## 用户
-![](https://github.com/yashonalbert/szlibrary/blob/master/images/user.png "用户主页")
-![](https://github.com/yashonalbert/szlibrary/blob/master/images/userBooks.png "书库列表")
-![](https://github.com/yashonalbert/szlibrary/blob/master/images/userRecords.png "借阅记录")
-![](https://github.com/yashonalbert/szlibrary/blob/master/images/recommend.png "图书推荐")
-![](https://github.com/yashonalbert/szlibrary/blob/master/images/lent.png "图书借阅")
+<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/user.png" width="200">
+<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/userBook.png" width="200">
+<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/book.png" width="200">
+<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/userRecords.png" width="200">
+<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/lent.png" width="200">
+<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/recommend.png" width="200">
