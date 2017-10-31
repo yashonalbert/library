@@ -65,8 +65,8 @@ $ node nexe.js //启动后端
 ### 管理员页面
 
 <p align="center">
-  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/login.png" width="250">
-  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/webBooks.png" width="250">
-  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/batch.png" width="250">
-  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/webRecords.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/login.png">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/webBooks.png">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/batch.png">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/webRecords.png">
 </p>
