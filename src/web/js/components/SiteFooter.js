@@ -3,15 +3,12 @@ import {
   Container,
 } from 'amazeui-react';
 
-const year = new Date().getFullYear();
-
 const SiteFooter = function SiteFooter() {
   return (
     <footer className="ask-footer">
       <Container>
         <p>
-          © {year} AllMobilize, Inc. Licensed under MIT license.
-          Developed with WebStorm.
+          © 2016 yahshonalbert.
         </p>
       </Container>
     </footer>
