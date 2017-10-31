@@ -8,13 +8,13 @@
 
 ### 项目部署
 
-```bash
-git clone https://github.com/yashonalbert/library // 克隆项目
-cd library // 进入项目
-npm install // 安装依赖
-npm run build-backend // 编译后端
-npm run pack //编译前端
-node nexe.js //启动后端
+```sh
+$ git clone https://github.com/yashonalbert/library // 克隆项目
+$ cd library // 进入项目
+$ npm install // 安装依赖
+$ npm run build-backend // 编译后端
+$ npm run pack //编译前端
+$ node nexe.js //启动后端
 ```
 
 ### 配置文件
@@ -37,9 +37,12 @@ npm run pack //编译前端
 ## 移动端
 
 ## 用户
-<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/user.png" width="200">
-<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/userBook.png" width="200">
-<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/book.png" width="200">
-<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/userRecords.png" width="200">
-<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/lent.png" width="200">
-<img src="https://github.com/yashonalbert/szlibrary/blob/master/images/recommend.png" width="200">
+<p float="left" align="center">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/user.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/userBooks.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/book.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/userRecords.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/lent.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/recommend.png" width="250">
+</p>
+
