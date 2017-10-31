@@ -36,7 +36,7 @@ $ node nexe.js //启动后端
 
 ## 移动端
 
-## 用户
+### 用户页面
 <p float="left" align="center">
   <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/user.png" width="250">
   <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/userBooks.png" width="250">
@@ -46,3 +46,16 @@ $ node nexe.js //启动后端
   <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/recommend.png" width="250">
 </p>
 
+### 管理员页面
+
+<p float="left" align="center">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/admin.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/setBook.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/adminBooks.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/msgLent.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/authorization.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/adminRecords.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/return.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/lentInfo.png" width="250">
+  <img src="https://github.com/yashonalbert/szlibrary/blob/master/images/webCode.png" width="250">
+</p>
